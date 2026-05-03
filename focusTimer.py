@@ -1,54 +1,72 @@
 import time
+import tkinter as tk
+#import font library
+from tkinter import font
 
 #initalize mode
 currentMode = "Focus"
 
+#initalize window with name and make it fullscreen and the background color purple
+root = tk.Tk(screenName="Focus Timer", baseName="Productivity")
+
+width = root.winfo_screenwidth()
+height = root.winfo_screenheight()
+
+root.geometry("%dx%d" % (width,height))
+
+root.title("Productivity")
+
+root.config(background="#160F37")
 
 #initlizing timers for each mode in seconds
-focusTime = 10
-shortBreakTime = 2
-longBreakTime = 5
+focusTime = 3
+shortBreakTime = 1
+longBreakTime = 2
 
 #initalizing the session counter
 sessions = 0
 
 timeRemaining = 0 #initalizing time remaining variable
-timerDisplay = "" # timer display text initalized
+timerDisplayTxt = "" # timer display text initalized
+
+#creating Timer Display label
+timerDisplay = tk.Label(text=timerDisplayTxt, fg="#5DB69F", font=font.Font(family="Mono", size=40,))
+
 
 #logic to select timer amount to match the mode
-
 def setTimer():
     global currentMode, timeRemaining
     if currentMode == "Focus":
         timeRemaining = focusTime
     elif currentMode == "Short Break":
         timeRemaining = shortBreakTime
-    else:
+    elif currentMode == "Long Break":
         timeRemaining = longBreakTime
 
 #logic to switch mode based on the previous mode and the number of sessions completed
 def switchMode():
     global sessions, currentMode
-    if sessions != 4:
-        if currentMode == "Focus":
-            currentMode = "Short Break"
-            sessions += 1
-            print("Session count: " + str(sessions)) #for testing that the session counter updates
-        else:
-            currentMode = "Focus"
-    else:
+    if sessions == 4: #once four sessions are complete, long break starts
         currentMode = "Long Break"
+        setTimer()
         sessions = 0
+    elif currentMode == "Focus" and sessions<4:
+        currentMode = "Short Break"
+        sessions += 1
+        print("Session count: " + str(sessions)) #for testing that the session counter updates
+    else:
+        currentMode = "Focus"
 
-
+setTimer()
 
 #countdown function created
 while True:
+    root.mainloop()
     while timeRemaining!=0:
-        timerDisplay = "{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60) #format timer display so it appears as 00:00
+        timerDisplayTxt = "{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60) #format timer display so it appears as 00:00
         time.sleep(1)
         timeRemaining-=1
-        print(timerDisplay)
+        print(timerDisplayTxt)
 
     #after timer ends, mode is switched and the timer is reset
     switchMode()

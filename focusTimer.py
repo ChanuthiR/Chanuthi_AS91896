@@ -1,13 +1,13 @@
 import time
-import tkinter as tk
+import customtkinter as tk
 #import font library
-from tkinter import font
+from tkinter import font, StringVar
 
 #initalize mode
 currentMode = "Focus"
 
 #initalize window with name and make it fullscreen and the background color purple
-root = tk.Tk(screenName="Focus Timer", baseName="Productivity")
+root = tk.CTk(screenName="Focus Timer", baseName="Productivity")
 
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
@@ -19,22 +19,23 @@ root.title("Productivity")
 root.config(background="#160F37")
 
 #initlizing timers for each mode in seconds
-focusTime = 3
-shortBreakTime = 1
-longBreakTime = 2
+focusTime = 25*60
+shortBreakTime = 5*60
+longBreakTime = 10*60
 
 #initalizing the session counter
 sessions = 0
 
 timeRemaining = 0 #initalizing time remaining variable
-timerDisplayTxt = "00:00" # timer display text initalized
+timeRunning = ""
+timerDisplayTxt = StringVar(root,value="00:00")# timer display text initalized as a Tkinter variable
 
 #creating Timer Display label
-timerDisplay = tk.Label(text=timerDisplayTxt, fg="#5DB69F", font=font.Font(family="Consolas", size=100),bg="#160F37")
-timerDisplay.grid(row=2,column=1,padx=10,pady=10)
+timerDisplay = tk.CTkLabel(root, textvariable=timerDisplayTxt, text_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=200),fg_color="#160F37")
+timerDisplay.pack()
 
-startBtn = tk.Button(text="Start",bg="#322952", fg="#FFFFFF",activebackground="#392E5E", activeforeground="#FFFFFF",relief=tk.FLAT, width=10, height=2)
-startBtn.grid(row=3,column=1,pady=10,padx=10)
+startBtn = tk.CTkButton(root, text="Start", fg_color="#322952", text_color="#FFFFFF", font=tk.CTkFont(family="Consolas",size=20), border_spacing=10, hover_color="#392E5E", width=10, height=2,corner_radius=1000)
+startBtn.pack()
 
 
 #logic to select timer amount to match the mode
@@ -68,12 +69,10 @@ setTimer()
 while True:
     root.mainloop()
     while timeRemaining!=0:
-        timerDisplay.config(text=timerDisplayTxt)
-        timerDisplayTxt = "{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60) #format timer display so it appears as 00:00
+        timeRunning = "{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60)
+        timerDisplayTxt.set(timeRunning)#format timer display so it appears as XX:XX
         time.sleep(1)
         timeRemaining-=1
-        print(timerDisplayTxt)
-
     #after timer ends, mode is switched and the timer is reset
     switchMode()
     setTimer()

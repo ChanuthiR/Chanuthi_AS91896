@@ -1,80 +1,119 @@
-import time
 import customtkinter as tk
-#import font library
-from tkinter import font, StringVar
+
+
+#import string tkinter variable
+from tkinter import StringVar
+
 
 #initalize mode
 currentMode = "Focus"
 
+
 #initalize window with name and make it fullscreen and the background color purple
 root = tk.CTk(screenName="Focus Timer", baseName="Productivity")
+
 
 width = root.winfo_screenwidth()
 height = root.winfo_screenheight()
 
+
 root.geometry("%dx%d" % (width,height))
 
-root.title("Productivity")
 
+root.title("Productivity")
 root.config(background="#160F37")
+
 
 #initlizing timers for each mode in seconds
 focusTime = 25*60
 shortBreakTime = 5*60
 longBreakTime = 10*60
 
+
 #initalizing the session counter
 sessions = 0
 
+
+#initalize boolean variable of whether timer is running or paused
+isTimerRunning = False
+
+
 timeRemaining = 0 #initalizing time remaining variable
-timeRunning = ""
 timerDisplayTxt = StringVar(root,value="00:00")# timer display text initalized as a Tkinter variable
+
 
 #creating Timer Display label
 timerDisplay = tk.CTkLabel(root, textvariable=timerDisplayTxt, text_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=200),fg_color="#160F37")
 timerDisplay.pack()
 
-startBtn = tk.CTkButton(root, text="Start", fg_color="#322952", text_color="#FFFFFF", font=tk.CTkFont(family="Consolas",size=20), border_spacing=10, hover_color="#392E5E", width=10, height=2,corner_radius=1000)
+
+#creating the start button with a hover effect and linking its functionality
+def timerControl():
+   global isTimerRunning
+   isTimerRunning = not isTimerRunning
+   print(isTimerRunning)
+
+
+
+
+startBtn = tk.CTkButton(root, text="Start", fg_color="#322952", bg_color= "#160F37", text_color="#FFFFFF", font=tk.CTkFont(family="Consolas",size=20), command=timerControl,border_spacing=10, corner_radius=20, width= 172, height=42,hover_color="#392E5E")
 startBtn.pack()
+
+
 
 
 #logic to select timer amount to match the mode
 def setTimer():
-    global currentMode, timeRemaining
-    if currentMode == "Focus":
-        timeRemaining = focusTime
-    elif currentMode == "Short Break":
-        timeRemaining = shortBreakTime
-    elif currentMode == "Long Break":
-        timeRemaining = longBreakTime
+   global currentMode, timeRemaining
+   if currentMode == "Focus":
+       timeRemaining = focusTime
+   elif currentMode == "Short Break":
+       timeRemaining = shortBreakTime
+   elif currentMode == "Long Break":
+       timeRemaining = longBreakTime
+
 
 #logic to switch mode based on the previous mode and the number of sessions completed
 def switchMode():
-    global sessions, currentMode
-    if currentMode == "Focus":
-        sessions += 1
-        if sessions == 4: #once four sessions are complete, long break starts
-            currentMode = "Long Break"
-            setTimer()
-            sessions = 0
-        elif sessions<4:
-            currentMode = "Short Break"
-            print("Session count: " + str(sessions)) #for testing that the session counter updates
-    else:
-        currentMode = "Focus"
+   global sessions, currentMode
+   if currentMode == "Focus":
+       sessions += 1
+       if sessions == 4: #once four sessions are complete, long break starts
+           currentMode = "Long Break"
+           setTimer()
+           sessions = 0
+       elif sessions<4:
+           currentMode = "Short Break"
+           print("Session count: " + str(sessions)) #for testing that the session counter updates
+   else:
+       currentMode = "Focus"
+
 
 setTimer()
 
+
+
+
 #countdown function created
-while True:
-    root.mainloop()
-    while timeRemaining!=0:
-        timeRunning = "{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60)
-        timerDisplayTxt.set(timeRunning)#format timer display so it appears as XX:XX
-        time.sleep(1)
-        timeRemaining-=1
-    #after timer ends, mode is switched and the timer is reset
-    switchMode()
-    setTimer()
+def countdownTimer():
+   global timeRemaining, timerDisplayTxt, isTimerRunning
+   while isTimerRunning:
+       startBtn.configure(text="Pause") #updating button text
+       root.update()
+       while timeRemaining!=0:
+           timerDisplayTxt.set("{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60)) #update the timer display text
+           root.update() #updates the timer display
+           root.after(1000) #using after() function to wait 1 second before updating
+           timeRemaining-=1
+       #after timer ends, mode is switched and the timer is reset
+       switchMode()
+       setTimer()
+   else:
+       startBtn.configure(text="Start")
+       root.update()
 
 
+countdownTimer()
+
+
+root.mainloop()

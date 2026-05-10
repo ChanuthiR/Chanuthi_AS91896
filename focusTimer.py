@@ -23,43 +23,53 @@ root.geometry("%dx%d" % (width,height))
 root.title("Productivity")
 root.config(background="#160F37")
 
-
 #initlizing timers for each mode in seconds
 focusTime = 25*60
 shortBreakTime = 5*60
 longBreakTime = 10*60
 
-
 #initalizing the session counter
 sessions = 0
-
 
 #initalize boolean variable of whether timer is running or paused
 isTimerRunning = False
 
-
 timeRemaining = 0 #initalizing time remaining variable
 timerDisplayTxt = StringVar(root,value="00:00")# timer display text initalized as a Tkinter variable
+
+#creating focus button
+focusBtn = tk.CTkButton(root, text="Focus", fg_color="#2A2244", bg_color= "#160F37", text_color="#B776BB", font=tk.CTkFont(family="Consolas",size=20),border_spacing=10, corner_radius=20, width= 172, height=42,hover_color="#392E5E")
+focusBtn.pack()
+
+#creating short break button
+shortBreakBtn = tk.CTkButton(root, text="Short Break", fg_color="#2A2244", bg_color= "#160F37", text_color="#B776BB", font=tk.CTkFont(family="Consolas",size=20),border_spacing=10, corner_radius=20, width= 172, height=42,hover_color="#392E5E")
+shortBreakBtn.pack()
+
+#creating long break button
+longBreakBtn = tk.CTkButton(root, text="Long Break", fg_color="#2A2244", bg_color= "#160F37", text_color="#B776BB", font=tk.CTkFont(family="Consolas",size=20),border_spacing=10, corner_radius=20, width= 172, height=42,hover_color="#392E5E")
+longBreakBtn.pack()
 
 
 #creating Timer Display label
 timerDisplay = tk.CTkLabel(root, textvariable=timerDisplayTxt, text_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=200),fg_color="#160F37")
-timerDisplay.pack()
+timerDisplay.pack( )
+
 
 
 #creating the start button with a hover effect and linking its functionality
 def timerControl():
    global isTimerRunning
    isTimerRunning = not isTimerRunning
-   print(isTimerRunning)
-
-
+   if isTimerRunning == True:
+       startBtn.configure(text="Pause")
+       countdownTimer()
+   else:
+       startBtn.configure(text="Start")
+       countdownTimer()
 
 
 startBtn = tk.CTkButton(root, text="Start", fg_color="#322952", bg_color= "#160F37", text_color="#FFFFFF", font=tk.CTkFont(family="Consolas",size=20), command=timerControl,border_spacing=10, corner_radius=20, width= 172, height=42,hover_color="#392E5E")
 startBtn.pack()
-
-
 
 
 #logic to select timer amount to match the mode
@@ -92,26 +102,19 @@ def switchMode():
 setTimer()
 
 
-
-
 #countdown function created
 def countdownTimer():
    global timeRemaining, timerDisplayTxt, isTimerRunning
-   while isTimerRunning:
-       startBtn.configure(text="Pause") #updating button text
-       root.update()
-       while timeRemaining!=0:
-           timerDisplayTxt.set("{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60)) #update the timer display text
-           root.update() #updates the timer display
-           root.after(1000) #using after() function to wait 1 second before updating
-           timeRemaining-=1
-       #after timer ends, mode is switched and the timer is reset
-       switchMode()
-       setTimer()
-   else:
-       startBtn.configure(text="Start")
-       root.update()
+   while timeRemaining!=0:
+        timerDisplayTxt.set("{:02d}:{:02d}".format(timeRemaining//60, timeRemaining%60)) #update the timer display text
+        root.update() #updates the timer display
+        if isTimerRunning:
+            timeRemaining -= 1
+        root.after(1000) #using after() function to wait 1 second before updating
 
+       #after timer ends, mode is switched and the timer is reset
+   switchMode()
+   setTimer()
 
 countdownTimer()
 

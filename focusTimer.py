@@ -2,6 +2,7 @@ import customtkinter as tk
 #import string tkinter variable
 from tkinter import StringVar
 
+
 #initalize mode
 currentMode = "Focus"
 
@@ -16,12 +17,15 @@ sessions = 0
 #initalize boolean variable of whether timer is running or paused
 isTimerRunning = False
 
+#initalize  variable of whether or not music is playing
+
+
 timeRemaining = 0 #initalizing time remaining variable
 
 class TimerApp(tk.CTk):
     def __init__(self):
         super().__init__()
-        self.width = 500
+        self.width = 800
         self.height = 500
 
         self.geometry("%dx%d" % (self.width, self.height))
@@ -38,8 +42,9 @@ class TimerApp(tk.CTk):
         # creating Timer Display label
         self.timerDisplay = tk.CTkLabel(self, textvariable=self.timerDisplayTxt, text_color="#5DB69F",
                                    font=tk.CTkFont(family="Consolas", size=200), fg_color="#160F37")
-        self.timerDisplay.grid(row=0, column=0, columnspan=3, sticky="ew")
+        self.timerDisplay.grid(row=1, column=0, columnspan=3, sticky="ew")
 
+        self.isMusicPlaying = tk.StringVar(value="off")
         # creating the start button with a hover effect and linking its functionality
         def timerControl():
             global isTimerRunning
@@ -51,33 +56,40 @@ class TimerApp(tk.CTk):
                 self.startBtn.configure(text="Start")
                 countdownTimer()
 
+        #function  to change the button colour after music switch is on
+        def musicControl():
+            if self.isMusicPlaying.get() == "on":
+                self.musicSwitch.configure(button_color="white")
 
         self.startBtn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color="#160F37", text_color="#FFFFFF",
                                 font=tk.CTkFont(family="Consolas", size=20), command=timerControl, border_spacing=10,
                                 corner_radius=20, width=172, height=42, hover_color="#392E5E")
-        self.startBtn.grid(row=1, column=1)
+        self.startBtn.grid(row=2, column=1)
 
         # creating focus button
         self.focusBtn = tk.CTkButton(self, text="Focus", fg_color="#2A2244", bg_color="#160F37", text_color="#B776BB",
                                 command=lambda: setMode("Focus"), font=tk.CTkFont(family="Consolas", size=20),
                                 border_spacing=10, corner_radius=20, width=172, height=42, hover_color="#392E5E")
-        self.focusBtn.grid(row=2, column=0, pady=30, sticky="e")
+        self.focusBtn.grid(row=3, column=0, pady=30, sticky="e")
 
         # creating short break button
         self.shortBreakBtn = tk.CTkButton(self, text="Short Break", fg_color="#2A2244", bg_color="#160F37",
                                      text_color="#B776BB", command=lambda: setMode("Short Break"),
                                      font=tk.CTkFont(family="Consolas", size=20), border_spacing=10, corner_radius=20,
                                      width=172, height=42, hover_color="#392E5E")
-        self.shortBreakBtn.grid(row=2, column=1, pady=30)
+        self.shortBreakBtn.grid(row=3, column=1, pady=30)
 
         # creating long break button
         self.longBreakBtn = tk.CTkButton(self, text="Long Break", fg_color="#2A2244", bg_color="#160F37",
                                     text_color="#B776BB", command=lambda: setMode("Long Break"),
                                     font=tk.CTkFont(family="Consolas", size=20), border_spacing=10, corner_radius=20,
                                     width=172, height=42, hover_color="#392E5E")
-        self.longBreakBtn.grid(row=2, column=2, pady=30, sticky="w")
+        self.longBreakBtn.grid(row=3, column=2, pady=30, sticky="w")
 
-
+        self.musicSwitch = tk.CTkSwitch(self, text="Music",
+                                 variable=self.isMusicPlaying, onvalue="on", offvalue="off", bg_color= "#160F37",button_color="#79747E", fg_color="#E6E0E9",
+                                       switch_width=68, switch_height= 35, text_color="#744B77", progress_color="#6750A4", command=musicControl)
+        self.musicSwitch.grid(row=0,column=2, pady=10)
         # function for user to set the mode manually based on input from the buttons
         def setMode(newMode):
             global currentMode, isTimerRunning

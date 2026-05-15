@@ -2,6 +2,8 @@ import customtkinter as tk
 #import string tkinter variable
 from tkinter import StringVar
 
+#library for audio play
+import libwinmedia
 
 #initalize mode
 currentMode = "Focus"
@@ -44,6 +46,11 @@ class TimerApp(tk.CTk):
                                    font=tk.CTkFont(family="Consolas", size=200), fg_color="#160F37")
         self.timerDisplay.grid(row=1, column=0, columnspan=3, sticky="ew")
 
+        #creating the player and opening the media file
+        self.player = libwinmedia.Player(True)
+        self.chimeEffect = libwinmedia.Media("level-up.mp3")
+
+        #music switch variable
         self.isMusicPlaying = tk.StringVar(value="off")
         # creating the start button with a hover effect and linking its functionality
         def timerControl():

@@ -1,9 +1,15 @@
 import customtkinter as tk
-#import string tkinter variable
 
+#import string tkinter variable and image library
 from tkinter import StringVar
 from PIL import Image
 from customtkinter import CTkImage
+
+#importing audio library with needed requirements
+import os
+os.environ["PATH"] = (os.path.dirname("C:\\Users\\26352\\PycharmProjects\\Chanuthi_AS91896\\libwinmedia.dll") + os.pathsep +
+                      os.environ["PATH"])
+import libwinmedia
 
 #initalize mode
 currentMode = "Focus"
@@ -18,9 +24,6 @@ sessions = 0
 
 #initalize boolean variable of whether timer is running or paused
 isTimerRunning = False
-
-#initalize  variable of whether or not music is playing
-
 
 timeRemaining = 0  #initalizing time remaining variable
 
@@ -47,6 +50,9 @@ class TimerApp(tk.CTk):
                                         font=tk.CTkFont(family="Consolas", size=200), fg_color="#160F37")
         self.timerDisplay.grid(row=1, column=0, columnspan=3, sticky="ew")
 
+        #set up player and load the chime sound
+        self.player = libwinmedia.Player()
+        self.chime = libwinmedia.Media("chime.mp3")
 
         #music switch variable
         self.isMusicPlaying = tk.StringVar(value="off")
@@ -66,6 +72,10 @@ class TimerApp(tk.CTk):
         def musicControl():
             if self.isMusicPlaying.get() == "on":
                 self.musicSwitch.configure(button_color="white")
+                self.musicIcon.configure(fg_color="white")
+            else:
+                self.musicSwitch.configure(button_color="#79747E")
+                self.musicIcon.configure(fg_color="#E6E0E9")
 
         self.startBtn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color="#160F37", text_color="#FFFFFF",
                                      font=tk.CTkFont(family="Consolas", size=20), command=timerControl,
@@ -95,13 +105,16 @@ class TimerApp(tk.CTk):
                                          width=172, height=42, hover_color="#392E5E")
         self.longBreakBtn.grid(row=3, column=2, pady=30, sticky="w")
 
+        #creating music switch and adding the music icon
         self.musicSwitch = tk.CTkSwitch(self, text="Music",
                                         variable=self.isMusicPlaying, onvalue="on", offvalue="off", bg_color="#160F37",
                                         button_color="#79747E", fg_color="#E6E0E9",
-                                        switch_width=68, text_color="#160F37", switch_height=35,
+                                        switch_width=75, text_color="#160F37", switch_height=35,
                                         progress_color="#6750A4", command=musicControl)
-        self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("music_note.png"),size=(20,20)), fg_color="#160F37")
-        self.musicIcon.grid(row=0,column=2,sticky="w")
+
+        self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("music_note.png"),
+                                                    size=(15,15)), width=2, height=5, text="", fg_color="#E6E0E9")
+        self.musicIcon.place(x=660,y=18)
         self.musicSwitch.grid(row=0, column=2, pady=10)
 
         # function for user to set the mode manually based on input from the buttons
@@ -133,7 +146,10 @@ class TimerApp(tk.CTk):
 
         # logic to switch mode based on the previous mode and the number of sessions completed
         def switchMode():
-            global sessions, currentMode
+            global sessions, currentMode, isTimerRunning
+            self.player.open(self.chime)
+            isTimerRunning = False
+            self.startBtn.configure(text="Start")
             if currentMode == "Focus":
                 sessions += 1
                 if sessions == 4:  # once four sessions are complete, long break starts

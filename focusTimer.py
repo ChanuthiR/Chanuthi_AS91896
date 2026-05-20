@@ -27,7 +27,14 @@ isTimerRunning = False
 
 timeRemaining = 0  #initalizing time remaining variable
 
+#creates task list window
+class TaskList(tk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+        self.geometry("400x300")
 
+
+#creates timer app window
 class TimerApp(tk.CTk):
     def __init__(self):
         super().__init__()
@@ -53,6 +60,7 @@ class TimerApp(tk.CTk):
         #set up player and load the chime sound
         self.player = libwinmedia.Player()
         self.chime = libwinmedia.Media("chime.mp3")
+
 
         #music switch variable
         self.isMusicPlaying = tk.StringVar(value="off")
@@ -113,7 +121,7 @@ class TimerApp(tk.CTk):
                                         progress_color="#6750A4", command=musicControl)
 
         self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("music_note.png"),
-                                                    size=(15,15)), width=2, height=5, text="", fg_color="#E6E0E9")
+                                                    size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
         self.musicIcon.place(x=660,y=18)
         self.musicSwitch.grid(row=0, column=2, pady=10)
 

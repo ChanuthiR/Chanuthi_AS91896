@@ -16,7 +16,7 @@ from pygame import mixer
 currentMode = "Focus"
 
 #initlizing timers for each mode in seconds
-focusTime = 25 * 60
+focusTime = 5
 shortBreakTime = 5
 longBreakTime = 10 * 60
 
@@ -33,7 +33,6 @@ class TaskList(tk.CTkToplevel):
     def __init__(self):
         super().__init__()
         self.geometry("400x300")
-
 
 #creates timer app window
 class TimerApp(tk.CTk):
@@ -118,6 +117,20 @@ class TimerApp(tk.CTk):
                                          width=172, height=42, hover_color="#392E5E")
         self.longBreakBtn.grid(row=3, column=2, pady=30, sticky="w")
 
+
+        #creating session indicators
+        self.indicator1 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
+        self.indicator1.grid(row=0,column=0,sticky="nw", pady=20, padx=30)
+
+        self.indicator2 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
+        self.indicator2.grid(row=0,column=0,sticky="nw", pady=20, padx=60)
+
+        self.indicator3 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
+        self.indicator3.grid(row=0,column=0,sticky="nw", pady=20, padx=90)
+
+        self.indicator4 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
+        self.indicator4.grid(row=0,column=0,sticky="nw", pady=20, padx=120)
+
         #creating music switch and adding the music icon
         self.musicSwitch = tk.CTkSwitch(self, text="Music",
                                         variable=self.isMusicPlaying, onvalue="on", offvalue="off", bg_color="#160F37",
@@ -130,6 +143,8 @@ class TimerApp(tk.CTk):
         self.musicIcon.place(x=660,y=18)
         self.musicSwitch.grid(row=0, column=2, pady=10)
 
+
+
         # function for user to set the mode manually based on input from the buttons
         def setMode(newMode):
             global currentMode, isTimerRunning
@@ -137,6 +152,12 @@ class TimerApp(tk.CTk):
             isTimerRunning = False
             self.startBtn.configure(text="Start")
             setTimer()
+
+        def setIndicator():
+            global sessions
+            for session in range(1,sessions+1):
+                print(session)
+
 
         # logic to select timer amount to match the mode, and changes the display colours of the mode buttons to showcase active mode
         def setTimer():
@@ -190,7 +211,9 @@ class TimerApp(tk.CTk):
 
             # after timer ends, mode is switched and the timer is reset
             switchMode()
+            setIndicator()
             setTimer()
+
 
         countdownTimer()
 

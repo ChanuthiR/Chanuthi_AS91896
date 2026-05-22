@@ -82,7 +82,6 @@ class TimerApp(tk.CTk):
         def musicControl():
             if self.isMusicPlaying.get() == "on":
                 mixer.music.play(-1)
-
                 self.musicSwitch.configure(button_color="white",button_hover_color="#EADDFF")
                 self.musicIcon.configure(fg_color="white")
             else:

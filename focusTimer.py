@@ -1,3 +1,5 @@
+from operator import index
+
 import customtkinter as tk
 
 #import string tkinter variable and image library
@@ -118,18 +120,31 @@ class TimerApp(tk.CTk):
         self.longBreakBtn.grid(row=3, column=2, pady=30, sticky="w")
 
 
-        #creating session indicators
-        self.indicator1 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
-        self.indicator1.grid(row=0,column=0,sticky="nw", pady=20, padx=30)
 
-        self.indicator2 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
-        self.indicator2.grid(row=0,column=0,sticky="nw", pady=20, padx=60)
+        #creating indicators within a list
+        self.indicators = []
 
-        self.indicator3 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
-        self.indicator3.grid(row=0,column=0,sticky="nw", pady=20, padx=90)
+        #creating four indicators and changing the x position
+        for x in range(1,5):
+            self.indicator=tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,
+                                       height=15, bg_color="#160F37")
+            self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(30*x))
+            self.indicators.append(self.indicator)
 
-        self.indicator4 = tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,height=15, bg_color="#160F37")
-        self.indicator4.grid(row=0,column=0,sticky="nw", pady=20, padx=120)
+
+        #function to set session indicators
+        def setIndicator():
+            global sessions
+            for indicator in self.indicators:
+                if sessions==0:
+                    indicator.configure(fg_color="#595E61")
+                elif sessions==4:
+                    indicator
+            for session in range(1,sessions+1): #counts sessions from 1-4
+                indicator = self.indicators[session-1] #changes color of indicators
+                # based on number of completed sessions
+                indicator.configure(fg_color= "#5DB69F")
+
 
         #creating music switch and adding the music icon
         self.musicSwitch = tk.CTkSwitch(self, text="Music",
@@ -144,7 +159,6 @@ class TimerApp(tk.CTk):
         self.musicSwitch.grid(row=0, column=2, pady=10)
 
 
-
         # function for user to set the mode manually based on input from the buttons
         def setMode(newMode):
             global currentMode, isTimerRunning
@@ -152,11 +166,6 @@ class TimerApp(tk.CTk):
             isTimerRunning = False
             self.startBtn.configure(text="Start")
             setTimer()
-
-        def setIndicator():
-            global sessions
-            for session in range(1,sessions+1):
-                print(session)
 
 
         # logic to select timer amount to match the mode, and changes the display colours of the mode buttons to showcase active mode
@@ -186,13 +195,13 @@ class TimerApp(tk.CTk):
             self.startBtn.configure(text="Start")
             if currentMode == "Focus":
                 sessions += 1
-                if sessions == 4:  # once four sessions are complete, long break starts
+                if sessions == 4: # once four sessions are complete, long break starts
+                    setIndicator() #set indicator before counter resets
                     currentMode = "Long Break"
                     setTimer()
                     sessions = 0
                 elif sessions < 4:
                     currentMode = "Short Break"
-                    print("Session count: " + str(sessions))  # for testing that the session counter updates
             else:
                 currentMode = "Focus"
 
@@ -210,6 +219,7 @@ class TimerApp(tk.CTk):
                 self.after(1000)  # using after() function to wait 1 second before updating
 
             # after timer ends, mode is switched and the timer is reset
+
             switchMode()
             setIndicator()
             setTimer()

@@ -3,9 +3,10 @@ from operator import index
 import customtkinter as tk
 
 #import string tkinter variable and image library
-from tkinter import StringVar
+from tkinter import StringVar, Canvas
 from PIL import Image
 from customtkinter import CTkImage
+
 
 #importing audio library with needed requirements
 import os
@@ -19,8 +20,8 @@ currentMode = "Focus"
 
 #initlizing timers for each mode in seconds
 focusTime = 5
-shortBreakTime = 5
-longBreakTime = 10 * 60
+shortBreakTime = 2
+longBreakTime = 3
 
 #initalizing the session counter
 sessions = 0
@@ -136,10 +137,10 @@ class TimerApp(tk.CTk):
         def setIndicator():
             global sessions
             for indicator in self.indicators:
-                if sessions==0:
+                if sessions==4: #making session indicators invisible in long break
+                    indicator.configure(fg_color="#160F37")
+                elif sessions == 0: #resetting indicators after four sessions are completed
                     indicator.configure(fg_color="#595E61")
-                elif sessions==4:
-                    indicator
             for session in range(1,sessions+1): #counts sessions from 1-4
                 indicator = self.indicators[session-1] #changes color of indicators
                 # based on number of completed sessions
@@ -153,10 +154,12 @@ class TimerApp(tk.CTk):
                                         switch_width=75, text_color="#160F37", switch_height=35,
                                         progress_color="#6750A4", command=musicControl, button_hover_color="#49454F")
 
-        self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("music_note.png"),
-                                                    size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
-        self.musicIcon.place(x=660,y=18)
+        c = Canvas(self, height=400, width=300, bg="#160F37")
+        c.grid(row=0, column=2, pady=10)
+        self.iconImage = CTkImage(light_image=Image.open("music_note.png"))
+        self.musicIcon= c.create_image(670,18,image=self.iconImage)
         self.musicSwitch.grid(row=0, column=2, pady=10)
+
 
 
         # function for user to set the mode manually based on input from the buttons
@@ -196,12 +199,13 @@ class TimerApp(tk.CTk):
             if currentMode == "Focus":
                 sessions += 1
                 if sessions == 4: # once four sessions are complete, long break starts
-                    setIndicator() #set indicator before counter resets
                     currentMode = "Long Break"
                     setTimer()
-                    sessions = 0
                 elif sessions < 4:
                     currentMode = "Short Break"
+            elif currentMode == "Long Break": #resetting counter at end of long break
+                sessions = 0
+                currentMode = "Focus"
             else:
                 currentMode = "Focus"
 

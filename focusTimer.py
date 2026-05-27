@@ -3,7 +3,7 @@ from operator import index
 import customtkinter as tk
 
 #import string tkinter variable and image library
-from tkinter import StringVar, Canvas
+from tkinter import StringVar, Canvas, PhotoImage
 from PIL import Image
 from customtkinter import CTkImage
 
@@ -84,13 +84,12 @@ class TimerApp(tk.CTk):
         def musicControl():
             if self.isMusicPlaying.get() == "on":
                 mixer.music.play(-1)
-                self.musicSwitch.configure(button_color="white",button_hover_color="#EADDFF")
+                self.musicSwitch.configure(button_color="white", button_hover_color="#EADDFF")
                 self.musicIcon.configure(fg_color="white")
             else:
                 mixer.music.pause()
                 self.musicSwitch.configure(button_color="#79747E", button_hover_color="#49454F")
                 self.musicIcon.configure(fg_color="#E6E0E9")
-
 
         self.startBtn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color="#160F37", text_color="#FFFFFF",
                                      font=tk.CTkFont(family="Consolas", size=20), command=timerControl,
@@ -154,13 +153,14 @@ class TimerApp(tk.CTk):
                                         switch_width=75, text_color="#160F37", switch_height=35,
                                         progress_color="#6750A4", command=musicControl, button_hover_color="#49454F")
 
-        c = Canvas(self, height=400, width=300, bg="#160F37")
-        c.grid(row=0, column=2, pady=10)
-        self.iconImage = CTkImage(light_image=Image.open("music_note.png"))
-        self.musicIcon= c.create_image(670,18,image=self.iconImage)
-        self.musicSwitch.grid(row=0, column=2, pady=10)
+        self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("music_note.png"),
+                                                    size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
+        self.musicIcon.place(x=670,y=18)
+        self.musicSwitch.grid(row=0, column=2, pady=10, padx=10)
 
-
+        self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
+                                       image=CTkImage(light_image=Image.open("tasklist_button.png"), size=(40,40)), hover_color="#160F37")
+        self.taskButton.grid(row=0,column=2, sticky="ne", pady=10, padx=50)
 
         # function for user to set the mode manually based on input from the buttons
         def setMode(newMode):

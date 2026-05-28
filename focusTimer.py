@@ -1,12 +1,10 @@
-from operator import index
 
 import customtkinter as tk
 
 #import string tkinter variable and image library
-from tkinter import StringVar, Canvas, PhotoImage
+from tkinter import StringVar
 from PIL import Image
 from customtkinter import CTkImage
-
 
 #importing audio library with needed requirements
 import os
@@ -33,20 +31,20 @@ timeRemaining = 0  #initalizing time remaining variable
 
 #creates task list window
 class TaskList(tk.CTkToplevel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.geometry("400x300")
+        self.title("Tasks")
+        self.configure(fg_color="#160F37")
 
 #creates timer app window
 class TimerApp(tk.CTk):
     def __init__(self):
         super().__init__()
-        self.width = 800
-        self.height = 500
 
-        self.geometry("%dx%d" % (self.width, self.height))
+        self.geometry("800x500")
 
-        # initalized window with name and make it fullscreen and the background color purple
+        # initialized window with name and make it fullscreen and the background color purple
         self.title("Productivity")
         self.config(background="#160F37")
 
@@ -67,6 +65,13 @@ class TimerApp(tk.CTk):
         
         #music switch variable
         self.isMusicPlaying = tk.StringVar(value="off")
+
+
+        #creating indicators within a list
+        self.indicators = []
+
+        #ensures there is no task list visible when program starts
+        self.toplevel_window = None
 
         # creating the start button with a hover effect and linking its functionality
         def timerControl():
@@ -90,6 +95,34 @@ class TimerApp(tk.CTk):
                 mixer.music.pause()
                 self.musicSwitch.configure(button_color="#79747E", button_hover_color="#49454F")
                 self.musicIcon.configure(fg_color="#E6E0E9")
+
+        #function to set session indicators
+        def setIndicator():
+            global sessions, currentMode
+
+            for indicator in self.indicators:
+                if currentMode=="Long Break": #making session indicators invisible in long break
+                    indicator.configure(fg_color="#160F37")
+                elif sessions == 0: #resetting indicators after four sessions are completed
+                    indicator.configure(fg_color="#595E61")
+            for session in range(1,sessions+1): #counts sessions from 1-4
+                indicator = self.indicators[session-1] #changes color of indicators
+                # based on number of completed sessions
+                indicator.configure(fg_color= "#5DB69F")
+
+        def openTasks(self):
+            if self.toplevel_window is None or not self.toplevel_window.winfo_exists(): #checks if the task list window already exists or not
+                self.toplevel_window = TaskList(self)  # create window
+            else:
+                self.toplevel_window.focus()  # if window exists focus it
+
+        #creating four indicators and changing the x position
+        for x in range(1,5):
+            self.indicator=tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,
+                                       height=15, bg_color="#160F37")
+            self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(30*x))
+            self.indicators.append(self.indicator)
+
 
         self.startBtn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color="#160F37", text_color="#FFFFFF",
                                      font=tk.CTkFont(family="Consolas", size=20), command=timerControl,
@@ -119,33 +152,6 @@ class TimerApp(tk.CTk):
                                          width=172, height=42, hover_color="#392E5E")
         self.longBreakBtn.grid(row=3, column=2, pady=30, sticky="w")
 
-
-
-        #creating indicators within a list
-        self.indicators = []
-
-        #creating four indicators and changing the x position
-        for x in range(1,5):
-            self.indicator=tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,
-                                       height=15, bg_color="#160F37")
-            self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(30*x))
-            self.indicators.append(self.indicator)
-
-
-        #function to set session indicators
-        def setIndicator():
-            global sessions
-            for indicator in self.indicators:
-                if sessions==4: #making session indicators invisible in long break
-                    indicator.configure(fg_color="#160F37")
-                elif sessions == 0: #resetting indicators after four sessions are completed
-                    indicator.configure(fg_color="#595E61")
-            for session in range(1,sessions+1): #counts sessions from 1-4
-                indicator = self.indicators[session-1] #changes color of indicators
-                # based on number of completed sessions
-                indicator.configure(fg_color= "#5DB69F")
-
-
         #creating music switch and adding the music icon
         self.musicSwitch = tk.CTkSwitch(self, text="Music",
                                         variable=self.isMusicPlaying, onvalue="on", offvalue="off", bg_color="#160F37",
@@ -155,12 +161,12 @@ class TimerApp(tk.CTk):
 
         self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("music_note.png"),
                                                     size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
-        self.musicIcon.place(x=670,y=18)
+        self.musicIcon.place(x=670,y=24)
         self.musicSwitch.grid(row=0, column=2, pady=10, padx=10)
 
         self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
-                                       image=CTkImage(light_image=Image.open("tasklist_button.png"), size=(40,40)), hover_color="#160F37")
-        self.taskButton.grid(row=0,column=2, sticky="ne", pady=10, padx=50)
+                                       image=CTkImage(light_image=Image.open("tasklist_button.png"), size=(40,40)), hover_color="#160F37", command=lambda: openTasks(self))
+        self.taskButton.grid(row=0,column=2, sticky="ne", pady=10, padx=40)
 
         # function for user to set the mode manually based on input from the buttons
         def setMode(newMode):

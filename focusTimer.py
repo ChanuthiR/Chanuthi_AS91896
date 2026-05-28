@@ -101,14 +101,15 @@ class TimerApp(tk.CTk):
             global sessions, currentMode
 
             for indicator in self.indicators:
-                if currentMode=="Long Break": #making session indicators invisible in long break
+                if sessions==4: #making session indicators invisible in long break
                     indicator.configure(fg_color="#160F37")
                 elif sessions == 0: #resetting indicators after four sessions are completed
                     indicator.configure(fg_color="#595E61")
-            for session in range(1,sessions+1): #counts sessions from 1-4
-                indicator = self.indicators[session-1] #changes color of indicators
-                # based on number of completed sessions
-                indicator.configure(fg_color= "#5DB69F")
+                else: #if session counter doesn't equal 4 or 0
+                    for session in range(1,sessions+1): #counts sessions from 1-4
+                        indicator = self.indicators[session-1] #changes color of indicators
+                        # based on number of completed sessions
+                        indicator.configure(fg_color= "#5DB69F")
 
         def openTasks(self):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists(): #checks if the task list window already exists or not

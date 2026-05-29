@@ -17,9 +17,9 @@ from pygame import mixer
 currentMode = "Focus"
 
 #initlizing timers for each mode in seconds
-focusTime = 5
-shortBreakTime = 2
-longBreakTime = 3
+focusTime = 25*60
+shortBreakTime = 5*60
+longBreakTime = 10*60
 
 #initalizing the session counter
 sessions = 0
@@ -36,6 +36,16 @@ class TaskList(tk.CTkToplevel):
         self.geometry("400x300")
         self.title("Tasks")
         self.configure(fg_color="#160F37")
+
+        tasks = []
+
+        self.grid_columnconfigure((0), weight=1)
+        self.taskLabel = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
+        self.taskLabel.grid(column=0,row=0,sticky="e", padx=20)
+
+        self.taskDone = tk.StringVar(value="notDone")
+        self.task = tk.CTkCheckBox(self, text_color="#FFFFFF", text="Finish Essay", variable=self.taskDone, onvalue="done", offvalue="notDone")
+        self.task.grid(column = 0, row=1, pady=10, padx=20)
 
 #creates timer app window
 class TimerApp(tk.CTk):
@@ -65,7 +75,6 @@ class TimerApp(tk.CTk):
         
         #music switch variable
         self.isMusicPlaying = tk.StringVar(value="off")
-
 
         #creating indicators within a list
         self.indicators = []
@@ -99,7 +108,6 @@ class TimerApp(tk.CTk):
         #function to set session indicators
         def setIndicator():
             global sessions, currentMode
-
             for indicator in self.indicators:
                 if sessions==4: #making session indicators invisible in long break
                     indicator.configure(fg_color="#160F37")
@@ -111,11 +119,19 @@ class TimerApp(tk.CTk):
                         # based on number of completed sessions
                         indicator.configure(fg_color= "#5DB69F")
 
+
         def openTasks(self):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists(): #checks if the task list window already exists or not
                 self.toplevel_window = TaskList(self)  # create window
             else:
                 self.toplevel_window.focus()  # if window exists focus it
+
+        #function to update task button based on whether the button is in a hovering state or not
+        def updateTaskButton(isHover):
+            if isHover:
+                self.taskButton.configure(image=CTkImage(light_image=Image.open("tasklist_hover.png"), size=(40,40)))
+            else:
+                self.taskButton.configure(image = CTkImage(light_image=Image.open("tasklist_button.png"), size=(40, 40)))
 
         #creating four indicators and changing the x position
         for x in range(1,5):
@@ -168,6 +184,9 @@ class TimerApp(tk.CTk):
         self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
                                        image=CTkImage(light_image=Image.open("tasklist_button.png"), size=(40,40)), hover_color="#160F37", command=lambda: openTasks(self))
         self.taskButton.grid(row=0,column=2, sticky="ne", pady=10, padx=40)
+
+        self.taskButton.bind("<Enter>", lambda hover: updateTaskButton(True))
+        self.taskButton.bind("<Leave>",lambda hover: updateTaskButton(False))
 
         # function for user to set the mode manually based on input from the buttons
         def setMode(newMode):

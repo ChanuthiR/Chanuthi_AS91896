@@ -37,15 +37,45 @@ class TaskList(tk.CTkToplevel):
         self.title("Tasks")
         self.configure(fg_color="#160F37")
 
-        tasks = []
+        #creating a list of tasks
+        self.tasks = ["Practice drums","Do math homework","Finish Macbeth Essay"]
 
         self.grid_columnconfigure((0), weight=1)
+
+        #creating the task label on the the top right corner
         self.taskLabel = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
         self.taskLabel.grid(column=0,row=0,sticky="e", padx=20)
 
-        self.taskDone = tk.StringVar(value="notDone")
-        self.task = tk.CTkCheckBox(self, text_color="#FFFFFF", text="Finish Essay", variable=self.taskDone, onvalue="done", offvalue="notDone")
-        self.task.grid(column = 0, row=1, pady=10, padx=20)
+        #iterating through the list of tasks to make a task tab for each
+        for task in self.tasks:
+            #creating a task
+            self.taskDone = tk.StringVar(value="notDone")
+            self.task = tk.CTkCheckBox(self, height=39, width=331,
+                                           hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF", border_color="#595E61", border_width=12,
+                                       fg_color="#5DB69F",font=tk.CTkFont(family="Consolas", size= 24), text=task, checkmark_color="#5DB69F",
+                                       variable=self.taskDone, onvalue="done", offvalue="notDone")
+            #ensuring the text, no matter the length is visible at a glance
+            self.task._text_label.configure(wraplength=300)
+            #place task in the grid, with each task placed one row below the previous task
+            self.task.grid(column = 0,row=(self.tasks.index(task)+1), pady=10, padx=20)
+
+        #creating task input box
+        self.taskInput = tk.CTkEntry(self, width=291, height=39, fg_color="#D9D9D9",font=tk.CTkFont(family="Consolas", size= 20),
+                                     placeholder_text="add new task", placeholder_text_color="#030000")
+        self.taskInput.grid(column=0,row=len(self.tasks)+2, padx=10, pady=10)
+
+        def updateAddButton(isHover):
+            if isHover:
+                self.addTaskButton.configure(image=CTkImage(light_image=Image.open("tasklist_hover.png"), size=(40, 40)))
+            else:
+                self.addTaskButton.configure(image=CTkImage(light_image=Image.open("tasklist_button.png"), size=(40, 40)))
+
+        #creating add task button
+        self.addTaskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
+                                       image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)), hover_color="#160F37")
+
+        self.addTaskButton.bind("<Enter>", lambda hover: updateAddButton(True))
+        self.addTaskButton.bind("<Leave>", lambda hover: updateAddButton(False))
 
 #creates timer app window
 class TimerApp(tk.CTk):

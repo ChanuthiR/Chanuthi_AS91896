@@ -33,6 +33,7 @@ timeRemaining = 0  #initalizing time remaining variable
 class taskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
         super().__init__(master)
+        self.configure(fg_color="#160F37")
         self.grid_columnconfigure((0), weight=1)
         self.values = values
 
@@ -74,7 +75,7 @@ class TaskWindow(tk.CTkToplevel):
 
         #placing the task list frame
         self.taskListFrame = taskList(self, values=self.tasks)
-        self.taskListFrame.grid(row=1, column=0, padx=10, pady=(10, 0), sticky="nsew")
+        self.taskListFrame.grid(row=1, column=0, padx=10, sticky="nsew")
 
         #creating task input box
         self.taskInput = tk.CTkEntry(self, width=291, height=39, fg_color="#D9D9D9",font=tk.CTkFont(family="Consolas", size= 20),
@@ -231,7 +232,8 @@ class TimerApp(tk.CTk):
         self.musicSwitch.grid(row=0, column=2, pady=10, padx=10)
 
         self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="Tasks", bg_color="#160F37",height=25, width=25,
-                                       image=CTkImage(light_image=Image.open("taskListButton.png"), size=(40,40)), hover_color="#160F37", command=lambda: openTasks(self))
+                                       image=CTkImage(light_image=Image.open("taskListButton.png"), size=(40,40)), hover_color="#160F37",
+                                       command=lambda: openTasks(self))
         self.taskButton.grid(row=0,column=2, sticky="ne", pady=10)
 
         self.taskButton.bind("<Enter>", lambda hover: updateTaskButton(True))

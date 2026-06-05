@@ -54,6 +54,7 @@ class taskList(tk.CTkScrollableFrame):
             self.task.grid(column=0, row=i, pady=10, padx=20)
 
 
+
 #creates task list window
 class TaskWindow(tk.CTkToplevel):
     def __init__(self):
@@ -73,6 +74,7 @@ class TaskWindow(tk.CTkToplevel):
         self.tasks = ["Practice drums", "Do math homework", "Finish Macbeth Essay", "something",
                       "something else"]
 
+
         #placing the task list frame
         self.taskListFrame = taskList(self, values=self.tasks)
         self.taskListFrame.grid(row=1, column=0, padx=10, sticky="nsew")
@@ -82,20 +84,31 @@ class TaskWindow(tk.CTkToplevel):
                                      placeholder_text="add new task", placeholder_text_color="#030000")
         self.taskInput.grid(column=0,row=2, padx=10, pady=10)
 
+        #updating add task button depending on if the user is hovering or not
         def updateAddButton(isHover):
             if isHover:
                 self.addTaskButton.configure(image=CTkImage(light_image=Image.open("addTaskHover.png"), size=(40, 40)))
             else:
                 self.addTaskButton.configure(image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40, 40)))
 
+        #function to add a task
+        def addTask():
+            self.tasks.append(self.taskInput.get())
+            #remove input from entry box
+            self.taskInput.delete(0,len(self.taskInput.get()))
+
+
+
+
         #creating add task button
         self.addTaskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
-                                       image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)), hover_color="#160F37")
+                                       image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)), hover_color="#160F37", command=addTask)
 
         self.addTaskButton.bind("<Enter>", lambda hover: updateAddButton(True))
         self.addTaskButton.bind("<Leave>", lambda hover: updateAddButton(False))
 
         self.addTaskButton.grid(column=0, row=2, padx=10, pady=10, sticky="e")
+
 
 #creates timer app window
 class TimerApp(tk.CTk):

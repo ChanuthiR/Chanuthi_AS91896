@@ -29,6 +29,10 @@ isTimerRunning = False
 
 timeRemaining = 0  #initalizing time remaining variable
 
+# creating a list of tasks
+tasks = ["Practice drums", "Do math homework", "Finish Macbeth Essay"]
+
+
 #creates task list frame that can scroll
 class taskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
@@ -36,18 +40,23 @@ class taskList(tk.CTkScrollableFrame):
         self.configure(fg_color="#160F37")
         self.grid_columnconfigure((0), weight=1)
         self.values = values
+        self.update(self.values)
+
+    def update(self, values):
 
         # iterating through the list of tasks to make a task tab for each
-        for i, task in enumerate(self.values):
-            # creating a task
+        for i, task in enumerate(values):
+             # creating a task
             self.taskDone = tk.StringVar(value="notDone")
             self.task = tk.CTkCheckBox(self, height=39, width=331,
-                                       hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF",
-                                       border_color="#595E61", border_width=12,
-                                       fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
-                                       text=task, checkmark_color="#5DB69F",
-                                       variable=self.taskDone, onvalue="done", offvalue="notDone")
-
+                                           hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF",
+                                           border_color="#595E61", border_width=12,
+                                           fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
+                                           text=task, checkmark_color="#5DB69F",
+                                           variable=self.taskDone, onvalue="done", offvalue="notDone")
+            self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
+                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77")
+            self.removeTaskButton.grid(column=0,row=i,sticky="e")
             # ensuring the text, no matter the length is visible at a glance
             self.task._text_label.configure(wraplength=300)
             # place task in the grid, with each task placed one row below the previous task
@@ -57,6 +66,7 @@ class taskList(tk.CTkScrollableFrame):
 
 #creates task list window
 class TaskWindow(tk.CTkToplevel):
+    global tasks
     def __init__(self):
         super().__init__()
         self.geometry("400x300")
@@ -70,9 +80,7 @@ class TaskWindow(tk.CTkToplevel):
         self.taskLabel = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
         self.taskLabel.grid(column=0,row=0,sticky="e", padx=20)
 
-        # creating a list of tasks
-        self.tasks = ["Practice drums", "Do math homework", "Finish Macbeth Essay", "something",
-                      "something else"]
+        self.tasks = tasks
 
 
         #placing the task list frame
@@ -93,11 +101,10 @@ class TaskWindow(tk.CTkToplevel):
 
         #function to add a task
         def addTask():
-            self.tasks.append(self.taskInput.get())
+            tasks.append(self.taskInput.get())
+            taskList.update(self.taskListFrame, values=self.tasks)
             #remove input from entry box
             self.taskInput.delete(0,len(self.taskInput.get()))
-
-
 
 
         #creating add task button

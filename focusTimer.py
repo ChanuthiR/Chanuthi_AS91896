@@ -6,10 +6,8 @@ from tkinter import StringVar
 from PIL import Image
 from customtkinter import CTkImage
 
-#importing audio library with needed requirements
-import os
-os.environ["PATH"] = (os.path.dirname("C:\\Users\\26352\\PycharmProjects\\Chanuthi_AS91896\\libwinmedia.dll") + os.pathsep +
-                      os.environ["PATH"])
+#importing messagebox library
+from tkinter import messagebox
 
 from pygame import mixer
 
@@ -42,8 +40,8 @@ class taskList(tk.CTkScrollableFrame):
         self.values = values
         self.update(self.values)
 
-    def update(self, values):
 
+    def update(self, values):
         # iterating through the list of tasks to make a task tab for each
         for i, task in enumerate(values):
              # creating a task
@@ -54,13 +52,17 @@ class taskList(tk.CTkScrollableFrame):
                                            fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
                                            text=task, checkmark_color="#5DB69F",
                                            variable=self.taskDone, onvalue="done", offvalue="notDone")
+            #creating remove task button
             self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
                                        image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77")
             self.removeTaskButton.grid(column=0,row=i,sticky="e")
-            # ensuring the text, no matter the length is visible at a glance
+
+
+        # ensuring the text, no matter the length is visible at a glance
             self.task._text_label.configure(wraplength=300)
             # place task in the grid, with each task placed one row below the previous task
             self.task.grid(column=0, row=i, pady=10, padx=20)
+
 
 
 
@@ -98,18 +100,26 @@ class TaskWindow(tk.CTkToplevel):
             else:
                 self.addTaskButton.configure(image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40, 40)))
 
+
         #function to add a task
         def addTask():
-            tasks.append(self.taskInput.get())
-            #update the task list frame
-            taskList.update(self.taskListFrame, values=self.tasks)
-            #remove input from entry box
+            #input validation of task input, should not be empty string and should only contain alphanumeric characters
+            if self.taskInput.get()=="":
+                messagebox.askretrycancel("Invalid Input","Input cannot be empty")
+            #removes spaces which are considered special characters before checking whether all characters are alphanumeric
+            elif not self.taskInput.get().replace(" ","").isalnum():
+                messagebox.askretrycancel("Invalid Input","Input should not contain special characters ")
+            else:
+                tasks.append(self.taskInput.get())
+                #update the task list frame
+                taskList.update(self.taskListFrame, values=self.tasks)
+                #remove input from entry box
             self.taskInput.delete(0,len(self.taskInput.get()))
-
 
         #creating add task button
         self.addTaskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
-                                       image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)), hover_color="#160F37", command=addTask)
+                                       image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)),
+                                          hover_color="#160F37", command=addTask)
 
         self.addTaskButton.bind("<Enter>", lambda hover: updateAddButton(True))
         self.addTaskButton.bind("<Leave>", lambda hover: updateAddButton(False))

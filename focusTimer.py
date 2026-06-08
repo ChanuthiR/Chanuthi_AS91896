@@ -17,8 +17,8 @@ from pygame import mixer
 currentMode = "Focus"
 
 #initlizing timers for each mode in seconds
-focusTime = 25*60
-shortBreakTime = 5*60
+focusTime = 5
+shortBreakTime = 2
 longBreakTime = 10*60
 
 #initalizing the session counter
@@ -82,7 +82,6 @@ class TaskWindow(tk.CTkToplevel):
 
         self.tasks = tasks
 
-
         #placing the task list frame
         self.taskListFrame = taskList(self, values=self.tasks)
         self.taskListFrame.grid(row=1, column=0, padx=10, sticky="nsew")
@@ -102,6 +101,7 @@ class TaskWindow(tk.CTkToplevel):
         #function to add a task
         def addTask():
             tasks.append(self.taskInput.get())
+            #update the task list frame
             taskList.update(self.taskListFrame, values=self.tasks)
             #remove input from entry box
             self.taskInput.delete(0,len(self.taskInput.get()))
@@ -179,15 +179,18 @@ class TimerApp(tk.CTk):
         def setIndicator():
             global sessions, currentMode
             for indicator in self.indicators:
-                if sessions==4: #making session indicators invisible in long break
+                if sessions==4: #making session indicators invisible when sessions are complete
                     indicator.configure(fg_color="#160F37")
-                elif sessions == 0: #resetting indicators after four sessions are completed
+                    self.indicatorLabel.configure(text_color="#160F37")
+                elif sessions == 0: #resetting indicators after long break is completed
                     indicator.configure(fg_color="#595E61")
+                    self.indicatorLabel.configure(text_color="#5DB69F")
                 else: #if session counter doesn't equal 4 or 0
                     for session in range(1,sessions+1): #counts sessions from 1-4
                         indicator = self.indicators[session-1] #changes color of indicators
                         # based on number of completed sessions
                         indicator.configure(fg_color= "#5DB69F")
+                        self.indicatorLabel.configure(text="{}/4".format(sessions))
 
 
         def openTasks(self):
@@ -204,10 +207,15 @@ class TimerApp(tk.CTk):
                 self.taskButton.configure(image = CTkImage(light_image=Image.open("taskListButton.png"), size=(40, 40)))
 
         #creating four indicators and changing the x position
+        self.indicatorLabel = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
+                                       height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
+                                          , text_color="#5DB69F")
+        self.indicatorLabel.grid(row=0, column=0, sticky="w", pady=(10,24), padx=28)
+
         for x in range(1,5):
             self.indicator=tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,
                                        height=15, bg_color="#160F37")
-            self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(30*x))
+            self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(40+(30*x)))
             self.indicators.append(self.indicator)
 
 
@@ -249,7 +257,7 @@ class TimerApp(tk.CTk):
         self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("musicNote.png"),
                                                     size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
         self.musicIcon.place(x=670,y=24)
-        self.musicSwitch.grid(row=0, column=2, pady=10, padx=10)
+        self.musicSwitch.grid(row=0, column=2, pady=10, padx=(0,30))
 
         self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="Tasks", bg_color="#160F37",height=25, width=25,
                                        image=CTkImage(light_image=Image.open("taskListButton.png"), size=(40,40)), hover_color="#160F37",

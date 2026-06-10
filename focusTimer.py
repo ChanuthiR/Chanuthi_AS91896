@@ -78,6 +78,7 @@ class TaskWindow(tk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0,1), weight=1)
 
+
         #creating the task label on the the top right corner
         self.taskLabel = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
         self.taskLabel.grid(column=0,row=0,sticky="e", padx=20)
@@ -139,7 +140,10 @@ class TimerApp(tk.CTk):
         self.config(background="#160F37")
 
         # configuring the grid geometry manager
-        self.grid_columnconfigure((0, 1, 2), weight=1)
+        self.grid_columnconfigure((1), weight=2)
+        self.grid_columnconfigure((0), weight=0)
+        self.grid_columnconfigure((2), weight=1)
+
 
         self.timerDisplayTxt = StringVar(self, value="00:00")  # timer display text initalized as a Tkinter variable
 
@@ -233,13 +237,13 @@ class TimerApp(tk.CTk):
                                      font=tk.CTkFont(family="Consolas", size=20), command=timerControl,
                                      border_spacing=10,
                                      corner_radius=20, width=172, height=42, hover_color="#392E5E")
-        self.startBtn.grid(row=2, column=1)
+        self.startBtn.place(x=320, y=300)
 
         # creating focus button
         self.focusBtn = tk.CTkButton(self, text="Focus", fg_color="#2A2244", bg_color="#160F37", text_color="#B776BB",
                                      command=lambda: setMode("Focus"), font=tk.CTkFont(family="Consolas", size=20),
                                      border_spacing=10, corner_radius=20, width=172, height=42, hover_color="#392E5E")
-        self.focusBtn.grid(row=3, column=0, pady=30, sticky="e")
+        self.focusBtn.place(x=120, y=390)
 
         # creating short break button
         self.shortBreakBtn = tk.CTkButton(self, text="Short Break", fg_color="#2A2244", bg_color="#160F37",
@@ -247,7 +251,7 @@ class TimerApp(tk.CTk):
                                           font=tk.CTkFont(family="Consolas", size=20), border_spacing=10,
                                           corner_radius=20,
                                           width=172, height=42, hover_color="#392E5E")
-        self.shortBreakBtn.grid(row=3, column=1, pady=30)
+        self.shortBreakBtn.place(x=320, y=390)
 
         # creating long break button
         self.longBreakBtn = tk.CTkButton(self, text="Long Break", fg_color="#2A2244", bg_color="#160F37",
@@ -255,7 +259,7 @@ class TimerApp(tk.CTk):
                                          font=tk.CTkFont(family="Consolas", size=20), border_spacing=10,
                                          corner_radius=20,
                                          width=172, height=42, hover_color="#392E5E")
-        self.longBreakBtn.grid(row=3, column=2, pady=30, sticky="w")
+        self.longBreakBtn.place(x=520, y=390)
 
         #creating music switch and adding the music icon
         self.musicSwitch = tk.CTkSwitch(self, text="Music",
@@ -266,7 +270,7 @@ class TimerApp(tk.CTk):
 
         self.musicIcon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("musicNote.png"),
                                                     size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
-        self.musicIcon.place(x=670,y=24)
+        self.musicIcon.place(x=650,y=24)
         self.musicSwitch.grid(row=0, column=2, pady=10, padx=(0,30))
 
         self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="Tasks", bg_color="#160F37",height=25, width=25,

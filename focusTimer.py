@@ -44,23 +44,34 @@ class taskList(tk.CTkScrollableFrame):
     def checkboxUpdate(self, taskNo, taskVar):
         print(f"Checkbox {taskNo} is {'checked' if taskVar.get() else 'unchecked'}")
 
+    def updateRemoveButton(self, isHover):
+        if isHover:
+            self.removeTaskButton.configure(image=CTkImage(light_image=Image.open("removeTaskHover.png"), size=(20, 20)))
+        else:
+            self.removeTaskButton.configure(image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20, 20)))
+
     def update(self, values):
+        #created a list of the task variables
         self.taskVars =[]
         # iterating through the list of tasks to make a task tab for each
         for i, task in enumerate(values):
              # creating a task
             self.taskDone = tk.BooleanVar()
+            self.taskVars.append(self.taskDone)
+
             self.task = tk.CTkCheckBox(self, height=39, width=331,
                                            hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF",
                                            border_color="#595E61", border_width=12,
                                            fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
                                            text=task, checkmark_color="#5DB69F",
                                        variable=self.taskDone,
-                                       command=lambda : self.checkboxUpdate(i+1, self.taskDone))
-            self.taskVars.append(self.taskDone)
+                                       command=lambda: self.checkboxUpdate(i+1, self.taskDone))
             #creating remove task button
             self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
                                        image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77")
+            self.removeTaskButton.bind("<Enter>", lambda hover: self.updateRemoveButton(True))
+            self.removeTaskButton.bind("<Leave>", lambda hover: self.updateRemoveButton(False))
+
             self.removeTaskButton.grid(column=0,row=i,sticky="e")
 
         # ensuring the text, no matter the length is visible at a glance
@@ -69,7 +80,6 @@ class taskList(tk.CTkScrollableFrame):
             self.task.grid(column=0, row=i, pady=10, padx=20)
 
         return self.taskVars
-
 
 
 

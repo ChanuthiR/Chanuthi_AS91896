@@ -1,4 +1,5 @@
 
+#importing ctk for GUI
 import customtkinter as tk
 
 #import string tkinter variable and image library
@@ -9,7 +10,11 @@ from customtkinter import CTkImage
 #importing messagebox library
 from tkinter import messagebox
 
+#importing audio library
 from pygame import mixer
+
+#Import library for partial function for checkboxes
+from functools import partial
 
 #initalize mode
 currentMode = "Focus"
@@ -34,28 +39,42 @@ tasks = ["Practice drums", "Do math homework", "Finish Macbeth Essay"]
 #creates task list frame that can scroll
 class taskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
+        #configuration of task list frame with a single column and dark purple background
         super().__init__(master)
         self.configure(fg_color="#160F37")
         self.grid_columnconfigure((0), weight=1)
         self.values = values
         self.update(self.values)
 
-
-    def checkboxUpdate(self, taskNo, taskVar):
-        print(f"Checkbox {taskNo} is {'checked' if taskVar.get() else 'unchecked'}")
-
-    def updateRemoveButton(self, isHover):
-        if isHover:
-            self.removeTaskButton.configure(image=CTkImage(light_image=Image.open("removeTaskHover.png"), size=(20, 20)))
+    #function to update checkbox and remove button display when selected and unselected
+    def updateCheckbox(self, taskNo):
+        if self.taskVars[taskNo].get():
+            self.taskCheckboxes[taskNo].configure(bg_color="#2A2244",text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
+            self.removeButtons[taskNo].configure(fg_color="#2A2244",bg_color="#2A2244")
         else:
-            self.removeTaskButton.configure(image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20, 20)))
+            self.taskCheckboxes[taskNo].configure(bg_color="#744B77", text_color="#FFFFFF",
+                                                  font=tk.CTkFont(family="Consolas", size=24, overstrike=False))
+            self.removeButtons[taskNo].configure(fg_color="#744B77",bg_color="#744B77")
 
+    #function to update the remove button depending on whether it is hovered over or not
+    def updateRemoveButton(self, isHover, buttonNo, partial):
+        if isHover:
+            self.removeButtons[buttonNo].configure(image=CTkImage(light_image=Image.open("removeTaskHover.png"), size=(20, 20)))
+        else:
+            self.removeButtons[buttonNo].configure(image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20, 20)))
+
+    #function to update the checkbox display
     def update(self, values):
         #created a list of the task variables
         self.taskVars =[]
+
+        #create list to hold the checkboxes and respective remove buttons
+        self.taskCheckboxes = []
+        self.removeButtons = []
+
         # iterating through the list of tasks to make a task tab for each
         for i, task in enumerate(values):
-             # creating a task
+             # creating a task with a boolean variable to hold checkbox value
             self.taskDone = tk.BooleanVar()
             self.taskVars.append(self.taskDone)
 
@@ -64,21 +83,29 @@ class taskList(tk.CTkScrollableFrame):
                                            border_color="#595E61", border_width=12,
                                            fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
                                            text=task, checkmark_color="#5DB69F",
-                                       variable=self.taskDone,
-                                       command=lambda: self.checkboxUpdate(i+1, self.taskDone))
-            #creating remove task button
+                                       variable=self.taskVars[i],
+                                       command=partial(self.updateCheckbox, i))
+
+            #creating remove task button with bindings to have events when the button is hovered over and not hovered over
             self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
                                        image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77")
-            self.removeTaskButton.bind("<Enter>", lambda hover: self.updateRemoveButton(True))
-            self.removeTaskButton.bind("<Leave>", lambda hover: self.updateRemoveButton(False))
 
-            self.removeTaskButton.grid(column=0,row=i,sticky="e")
+            # add the created remove button to the remove button array
+            self.removeButtons.append((self.removeTaskButton))
+
+            self.removeButtons[i].bind("<Enter>", partial (self.updateRemoveButton, True, i))
+            self.removeButtons[i].bind("<Leave>",  partial(self.updateRemoveButton, False, i))
+            self.removeButtons[i].grid(column=0,row=i,sticky="e")
 
         # ensuring the text, no matter the length is visible at a glance
             self.task._text_label.configure(wraplength=300)
             # place task in the grid, with each task placed one row below the previous task
             self.task.grid(column=0, row=i, pady=10, padx=20)
 
+            #adding created checkbox to the array
+            self.taskCheckboxes.append(self.task)
+
+        #ensuring task vars is visible to outer functions
         return self.taskVars
 
 
@@ -100,6 +127,7 @@ class TaskWindow(tk.CTkToplevel):
         self.taskLabel = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
         self.taskLabel.grid(column=0,row=0,sticky="e", padx=20)
 
+        #creating task variable
         self.tasks = tasks
 
         #placing the task list frame
@@ -138,7 +166,7 @@ class TaskWindow(tk.CTkToplevel):
         self.addTaskButton = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
                                        image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)),
                                           hover_color="#160F37", command=addTask)
-
+        #adding binding for events for when the button is hovered over or not
         self.addTaskButton.bind("<Enter>", lambda hover: updateAddButton(True))
         self.addTaskButton.bind("<Leave>", lambda hover: updateAddButton(False))
 
@@ -183,7 +211,7 @@ class TimerApp(tk.CTk):
         #ensures there is no task list visible when program starts
         self.toplevel_window = None
 
-        # creating the start button with a hover effect and linking its functionality
+        #function to control the timer and update the start button GUI
         def timerControl():
             global isTimerRunning
             isTimerRunning = not isTimerRunning
@@ -223,7 +251,7 @@ class TimerApp(tk.CTk):
                         indicator.configure(fg_color= "#5DB69F")
                         self.indicatorLabel.configure(text="{}/4".format(sessions))
 
-
+    #function to open task window
         def openTasks(self):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists(): #checks if the task list window already exists or not
                 self.toplevel_window = TaskWindow()  # create window
@@ -237,7 +265,7 @@ class TimerApp(tk.CTk):
             else:
                 self.taskButton.configure(image = CTkImage(light_image=Image.open("taskListButton.png"), size=(40, 40)))
 
-        #creating four indicators and changing the x position
+        #creating four indicators using a for and changing the x position for each so it shifts to the right for each indicator
         self.indicatorLabel = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
                                        height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
                                           , text_color="#5DB69F")
@@ -249,7 +277,7 @@ class TimerApp(tk.CTk):
             self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(40+(30*x)))
             self.indicators.append(self.indicator)
 
-
+        # creating the start button with a hover effect and linking its functionality
         self.startBtn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color="#160F37", text_color="#FFFFFF",
                                      font=tk.CTkFont(family="Consolas", size=20), command=timerControl,
                                      border_spacing=10,
@@ -369,4 +397,5 @@ class TimerApp(tk.CTk):
 
 
 root = TimerApp()
+
 root.mainloop()

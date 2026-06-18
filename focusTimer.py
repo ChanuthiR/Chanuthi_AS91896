@@ -38,6 +38,7 @@ tasks = ["Practice drums", "Do math homework", "Finish Macbeth Essay"]
 
 #creates task list frame that can scroll
 class taskList(tk.CTkScrollableFrame):
+
     def __init__(self, master, values):
         #configuration of task list frame with a single column and dark purple background
         super().__init__(master)
@@ -50,11 +51,11 @@ class taskList(tk.CTkScrollableFrame):
     def updateCheckbox(self, taskNo):
         if self.taskVars[taskNo].get():
             self.taskCheckboxes[taskNo].configure(bg_color="#2A2244",text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
-            self.removeButtons[taskNo].configure(fg_color="#2A2244",bg_color="#2A2244")
+            self.removeButtons[taskNo].configure(fg_color="#2A2244",bg_color="#2A2244", hover_color="#2A2244")
         else:
             self.taskCheckboxes[taskNo].configure(bg_color="#744B77", text_color="#FFFFFF",
                                                   font=tk.CTkFont(family="Consolas", size=24, overstrike=False))
-            self.removeButtons[taskNo].configure(fg_color="#744B77",bg_color="#744B77")
+            self.removeButtons[taskNo].configure(fg_color="#744B77",bg_color="#744B77",hover_color="#744B77")
 
     #function to update the remove button depending on whether it is hovered over or not
     def updateRemoveButton(self, isHover, buttonNo, partial):
@@ -78,16 +79,19 @@ class taskList(tk.CTkScrollableFrame):
             self.taskDone = tk.BooleanVar()
             self.taskVars.append(self.taskDone)
 
-            self.task = tk.CTkCheckBox(self, height=39, width=331,
+            self.task = tk.CTkCheckBox(self, height=39, width=320,
                                            hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF",
                                            border_color="#595E61", border_width=12,
                                            fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
                                            text=task, checkmark_color="#5DB69F",
                                        variable=self.taskVars[i],
                                        command=partial(self.updateCheckbox, i))
+            #ensuring the text, no matter the length is visible at a glance
+            self.task._text_label.configure(wraplength=300)
+
 
             #creating remove task button with bindings to have events when the button is hovered over and not hovered over
-            self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
+            self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=self.task.winfo_height(), width=10,
                                        image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77")
 
             # add the created remove button to the remove button array
@@ -97,8 +101,7 @@ class taskList(tk.CTkScrollableFrame):
             self.removeButtons[i].bind("<Leave>",  partial(self.updateRemoveButton, False, i))
             self.removeButtons[i].grid(column=0,row=i,sticky="e")
 
-        # ensuring the text, no matter the length is visible at a glance
-            self.task._text_label.configure(wraplength=300)
+
             # place task in the grid, with each task placed one row below the previous task
             self.task.grid(column=0, row=i, pady=10, padx=20)
 
@@ -116,6 +119,8 @@ class TaskWindow(tk.CTkToplevel):
     def __init__(self):
         super().__init__()
         self.geometry("400x300")
+        #ensure window cannot be resized
+        self.resizable(False, False)
         self.title("Tasks")
         self.configure(fg_color="#160F37")
         #grid configuration
@@ -183,6 +188,9 @@ class TimerApp(tk.CTk):
         # initialized window with name and make it fullscreen and the background color purple
         self.title("Productivity")
         self.config(background="#160F37")
+
+        # ensure window cannot be resized
+        self.resizable(False, False)
 
         # configuring the grid geometry manager
         self.grid_columnconfigure((1), weight=2)
@@ -397,5 +405,4 @@ class TimerApp(tk.CTk):
 
 
 root = TimerApp()
-
 root.mainloop()

@@ -64,6 +64,15 @@ class taskList(tk.CTkScrollableFrame):
         else:
             self.removeButtons[buttonNo].configure(image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20, 20)))
 
+    def removeTask(self, taskNo):
+        #remove the task checkbox and remove button from the array
+        self.taskCheckboxes.pop(taskNo)
+        self.removeButtons.pop(taskNo)
+        #remove task from the task list
+        tasks.pop(taskNo)
+
+        self.update(self, tasks)
+
     #function to update the checkbox display
     def update(self, values):
         #created a list of the task variables
@@ -91,8 +100,8 @@ class taskList(tk.CTkScrollableFrame):
 
 
             #creating remove task button with bindings to have events when the button is hovered over and not hovered over
-            self.removeTaskButton = tk.CTkButton(self,fg_color="#744B77", text="", bg_color="#744B77",height=self.task.winfo_height(), width=10,
-                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77")
+            self.removeTaskButton = tk.CTkButton(self, fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
+                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77", command=partial(taskList.removeTask, self, i))
 
             # add the created remove button to the remove button array
             self.removeButtons.append((self.removeTaskButton))

@@ -20,8 +20,8 @@ from functools import partial
 currentMode = "Focus"
 
 #initlizing timers for each mode in seconds
-focusTime = 5
-shortBreakTime = 2
+focusTime = 25*60
+shortBreakTime = 5*60
 longBreakTime = 10*60
 
 #initalizing the session counter
@@ -33,7 +33,7 @@ isTimerRunning = False
 timeRemaining = 0  #initalizing time remaining variable
 
 # creating a list of tasks
-tasks = ["Practice drums", "Do math homework", "Finish Macbeth Essay"]
+tasks = []
 
 
 #creates task list frame that can scroll
@@ -65,16 +65,19 @@ class taskList(tk.CTkScrollableFrame):
             self.removeButtons[buttonNo].configure(image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20, 20)))
 
     def removeTask(self, taskNo):
-        #remove the task checkbox and remove button from the array
-        self.taskCheckboxes.pop(taskNo)
-        self.removeButtons.pop(taskNo)
         #remove task from the task list
         tasks.pop(taskNo)
 
-        self.update(self, tasks)
+        #play chime when task is removed
+        mixer.Channel(0).play(mixer.Sound("chime.mp3"))
+        self.update(tasks)
 
     #function to update the checkbox display
     def update(self, values):
+        #destroy all checkboxes to ensure no garbage collected
+        for checkbox in self.winfo_children():
+            checkbox.destroy()
+
         #created a list of the task variables
         self.taskVars =[]
 
@@ -98,16 +101,22 @@ class taskList(tk.CTkScrollableFrame):
             #ensuring the text, no matter the length is visible at a glance
             self.task._text_label.configure(wraplength=300)
 
+            #update geometry manager
+            self.task.update()
 
-            #creating remove task button with bindings to have events when the button is hovered over and not hovered over
-            self.removeTaskButton = tk.CTkButton(self, fg_color="#744B77", text="", bg_color="#744B77",height=39, width=10,
-                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77", command=partial(taskList.removeTask, self, i))
+            #creating remove task button
+            #getting the height of the task checkbox and matching it as the height of the remove button
+            self.removeTaskButton = tk.CTkButton(self, fg_color="#744B77", text="", bg_color="#744B77",height=self.task.winfo_reqheight(), width=10,
+                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77",
+                                                 command=partial(taskList.removeTask, self, i))
 
             # add the created remove button to the remove button array
             self.removeButtons.append((self.removeTaskButton))
 
-            self.removeButtons[i].bind("<Enter>", partial (self.updateRemoveButton, True, i))
+            #bindings to have events when the button is hovered over and not hovered over
+            self.removeButtons[i].bind("<Enter>", partial(self.updateRemoveButton, True, i))
             self.removeButtons[i].bind("<Leave>",  partial(self.updateRemoveButton, False, i))
+
             self.removeButtons[i].grid(column=0,row=i,sticky="e")
 
 
@@ -192,11 +201,10 @@ class TimerApp(tk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("800x500")
-
         # initialized window with name and make it fullscreen and the background color purple
         self.title("Productivity")
         self.config(background="#160F37")
+        self.geometry("800x500")
 
         # ensure window cannot be resized
         self.resizable(False, False)
@@ -335,6 +343,7 @@ class TimerApp(tk.CTk):
         self.musicIcon.place(x=650,y=24)
         self.musicSwitch.grid(row=0, column=2, pady=10, padx=(0,30))
 
+        #creating task button and linking hover updates
         self.taskButton = tk.CTkButton(self,fg_color="#160F37", text="Tasks", bg_color="#160F37",height=25, width=25,
                                        image=CTkImage(light_image=Image.open("taskListButton.png"), size=(40,40)), hover_color="#160F37",
                                        command=lambda: openTasks(self))
@@ -374,6 +383,7 @@ class TimerApp(tk.CTk):
         # logic to switch mode based on the previous mode and the number of sessions completed
         def switchMode():
             global sessions, currentMode, isTimerRunning
+            #play chime after a session ends
             mixer.Channel(0).play(mixer.Sound("chime.mp3"))
             isTimerRunning = False
             self.startBtn.configure(text="Start")

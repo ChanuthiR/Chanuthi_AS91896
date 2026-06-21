@@ -1,9 +1,12 @@
+import sys
 
 #importing ctk for GUI
 import customtkinter as tk
 
 #import string tkinter variable and image library
 from tkinter import StringVar
+
+import pygame
 from PIL import Image
 from customtkinter import CTkImage
 
@@ -20,9 +23,9 @@ from functools import partial
 currentMode = "Focus"
 
 #initlizing timers for each mode in seconds
-focusTime = 25*60
-shortBreakTime = 5*60
-longBreakTime = 10*60
+focusTime = 5
+shortBreakTime = 2
+longBreakTime = 10
 
 #initalizing the session counter
 sessions = 0
@@ -209,6 +212,10 @@ class TimerApp(tk.CTk):
         # ensure window cannot be resized
         self.resizable(False, False)
 
+        #ensure window stays on top of other windows
+        self.wm_attributes("-topmost", 1)
+
+
         # configuring the grid geometry manager
         self.grid_columnconfigure((1), weight=2)
         self.grid_columnconfigure((0), weight=0)
@@ -275,6 +282,8 @@ class TimerApp(tk.CTk):
                         # based on number of completed sessions
                         indicator.configure(fg_color= "#5DB69F")
                         self.indicatorLabel.configure(text="{}/4".format(sessions))
+
+            self.indicatorLabel.update()
 
     #function to open task window
         def openTasks(self):
@@ -418,10 +427,14 @@ class TimerApp(tk.CTk):
             switchMode()
             setIndicator()
             setTimer()
-
-
         countdownTimer()
 
 
-root = TimerApp()
-root.mainloop()
+
+if __name__ == '__main__':
+    root = TimerApp()
+    # add protocol to quit program when exit button clicked
+    root.protocol("WM_DELETE_WINDOW", sys.exit)
+    root.mainloop()
+
+

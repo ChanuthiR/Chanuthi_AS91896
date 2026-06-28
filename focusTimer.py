@@ -47,8 +47,11 @@ class taskList(tk.CTkScrollableFrame):
         super().__init__(master)
         self.configure(fg_color="#160F37")
         self.grid_columnconfigure((0), weight=1)
+
+        #using the task list as an argument for the update function
         self.values = values
         self.update(self.values)
+
 
     #function to update checkbox and remove button display when selected and unselected
     def updateCheckbox(self, taskNo):
@@ -73,6 +76,8 @@ class taskList(tk.CTkScrollableFrame):
 
         #play chime when task is removed
         mixer.Channel(0).play(mixer.Sound("chime.mp3"))
+
+        #update task list
         self.update(tasks)
 
     #function to update the checkbox display
@@ -147,7 +152,8 @@ class taskWindow(tk.CTkToplevel):
         #grid configuration
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0,1), weight=1)
-
+        #ensure window stays on top of other windows
+        self.wm_attributes("-topmost", 1)
 
         #creating the task label on the the top right corner
         self.taskLabel = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
@@ -228,7 +234,7 @@ class TimerApp(tk.CTk):
                                         font=tk.CTkFont(family="Consolas", size=200), fg_color="#160F37")
         self.timerDisplay.grid(row=1, column=0, columnspan=3, sticky="ew")
 
-        #set up player and load the music
+        #set up player, volume, and load the music
         mixer.init()
         mixer.music.load("music.mp3")
         mixer.music.set_volume(0.3)
@@ -364,8 +370,13 @@ class TimerApp(tk.CTk):
         def setMode(newMode):
             global currentMode, isTimerRunning
             currentMode = newMode
+
+            #set the timer boolean to false
             isTimerRunning = False
+            #upate start button GUIT when mode switches
             self.startBtn.configure(text="Start")
+
+            #set the timer amount
             setTimer()
 
 
@@ -393,20 +404,21 @@ class TimerApp(tk.CTk):
             global sessions, currentMode, isTimerRunning
             #play chime after a session ends
             mixer.Channel(0).play(mixer.Sound("chime.mp3"))
+            #set the timer to not run
             isTimerRunning = False
             self.startBtn.configure(text="Start")
             if currentMode == "Focus":
-                sessions += 1
+                sessions += 1 #increment session counter
                 if sessions == 4: # once four sessions are complete, long break starts
                     currentMode = "Long Break"
-                    setTimer()
-                elif sessions < 4:
+                    setTimer() #set timer for switched mode
+                elif sessions < 4: #if focus session completed, and four sessions have not yet completed
                     currentMode = "Short Break"
             elif currentMode == "Long Break": #resetting counter at end of long break
                 sessions = 0
                 currentMode = "Focus"
             else:
-                currentMode = "Focus"
+                currentMode = "Focus" #if its a break mode, switch to focus mode
 
         setTimer()
 

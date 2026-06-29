@@ -209,7 +209,7 @@ class taskWindow(tk.CTkToplevel):
 
 
 #creates timer app window
-class TimerApp(tk.CTk):
+class timerApp(tk.CTk):
     def __init__(self):
         super().__init__()
 
@@ -229,6 +229,7 @@ class TimerApp(tk.CTk):
         self.grid_columnconfigure((0), weight=0)
         self.grid_columnconfigure((2), weight=1)
 
+        #protocol to ensure clear shutdown
         self.protocol("WM_DELETE_WINDOW", self.destroy)
 
         self.timerDisplayTxt = StringVar(self, value="00:00")  # timer display text initalized as a Tkinter variable
@@ -291,7 +292,7 @@ class TimerApp(tk.CTk):
                         # based on number of completed sessions
                         indicator.configure(fg_color= "#5DB69F")
                         self.indicatorLabel.configure(text="{}/4".format(sessions))
-
+            #update indicator label
             self.indicatorLabel.update()
 
     #function to open task window
@@ -308,7 +309,8 @@ class TimerApp(tk.CTk):
             else:
                 self.taskButton.configure(image = CTkImage(light_image=Image.open("taskListButton.png"), size=(40, 40)))
 
-        #creating four indicators using a for and changing the x position for each so it shifts to the right for each indicator
+        #creating four indicators using a for loop
+        # and changing the x position for each so it shifts to the right for each indicator
         self.indicatorLabel = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
                                        height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
                                           , text_color="#5DB69F")
@@ -446,10 +448,9 @@ class TimerApp(tk.CTk):
         #run countdown timer
         countdownTimer()
 
-
+#calling the TimerApp
 if __name__ == '__main__':
-    root = TimerApp()
-    # add protocol to quit program when exit button clicked
+    root = timerApp()
     root.mainloop()
 
 

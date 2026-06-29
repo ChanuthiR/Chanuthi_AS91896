@@ -1,4 +1,5 @@
 import sys
+import time
 
 #importing ctk for GUI
 import customtkinter as tk
@@ -34,6 +35,8 @@ sessions = 0
 isTimerRunning = False
 
 timeRemaining = 0  #initalizing time remaining variable
+
+after_id = None
 
 # creating a list of tasks
 tasks = []
@@ -226,6 +229,7 @@ class TimerApp(tk.CTk):
         self.grid_columnconfigure((0), weight=0)
         self.grid_columnconfigure((2), weight=1)
 
+        self.protocol("WM_DELETE_WINDOW", self.destroy)
 
         self.timerDisplayTxt = StringVar(self, value="00:00")  # timer display text initalized as a Tkinter variable
 
@@ -424,37 +428,28 @@ class TimerApp(tk.CTk):
 
         # countdown function created
         def countdownTimer():
-            global timeRemaining, isTimerRunning
-            global after_id
+            global timeRemaining, isTimerRunning, after_id
             #updates timer label based on countdown
-            while timeRemaining != 0:
+            if timeRemaining != 0:
                 self.timerDisplayTxt.set(
                     "{:02d}:{:02d}".format(timeRemaining // 60, timeRemaining % 60))  # update the timer display text
                 self.update()  # updates the timer display
                 if isTimerRunning:
                     timeRemaining -= 1
-                after_id = self.after(1000) # using after() function to wait 1 second before updating
-
-            # after timer ends, mode is switched and the timer is reset
-            switchMode()
-            setIndicator()
-            setTimer()
-
+                self.after(1000, countdownTimer) # using after() function to wait 1 second before updating
+            else:
+                # after timer ends, mode is switched and the timer is reset
+                switchMode()
+                setIndicator()
+                setTimer()
+                self.after(1000,countdownTimer)
         #run countdown timer
         countdownTimer()
 
 
-#function to exit the program
-def onExit():
-    root.after_cancel(after_id)
-    root.withdraw()
-    root.quit()
-    sys.exit()
-
 if __name__ == '__main__':
     root = TimerApp()
     # add protocol to quit program when exit button clicked
-    root.protocol("WM_DELETE_WINDOW", onExit)
     root.mainloop()
 
 

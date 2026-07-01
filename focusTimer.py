@@ -63,7 +63,7 @@ class TaskList(tk.CTkScrollableFrame):
         if is_hovering:
             self.remove_buttons[button_no].configure(image=CTkImage(light_image=Image.open("removeTaskHover.png"), size=(20, 20)))
         else:
-            self.remove_buttons[button_no].configure(image=CTkImage(light_image=Image.open("removetask_button.png"), size=(20, 20)))
+            self.remove_buttons[button_no].configure(image=CTkImage(light_image=Image.open("removetaskButton.png"), size=(20, 20)))
 
     def remove_task(self, task_no):
         #remove task from the task list
@@ -275,7 +275,9 @@ class TimerApp(tk.CTk):
                 if sessions==4: #making session indicators invisible when sessions are complete
                     indicator.configure(fg_color="#160F37")
                     self.indicator_label.configure(text_color="#160F37")
+                    self.indicator_label.configure(text="{}/4".format(sessions))
                 elif sessions == 0: #resetting indicators after long break is completed
+                    self.indicator_label.configure(text="{}/4".format(sessions))
                     indicator.configure(fg_color="#595E61")
                     self.indicator_label.configure(text_color="#5DB69F")
                 else: #if session counter doesn't equal 4 or 0
@@ -430,13 +432,12 @@ class TimerApp(tk.CTk):
                 self.update()  # updates the timer display
                 if is_timer_running:
                     time_remaining -= 1
-                self.after(1000, countdown_timer) # using after() function to wait 1 second before updating
             else:
                 # after timer ends, mode is switched and the timer is reset
                 switch_mode()
                 set_indicator()
                 set_timer()
-                self.after(1000,countdown_timer)
+            self.after(2000,countdown_timer)
         #run countdown timer
         countdown_timer()
 

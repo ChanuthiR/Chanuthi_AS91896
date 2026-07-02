@@ -54,7 +54,7 @@ class TaskList(tk.CTkScrollableFrame):
     def update_checkbox(self, task_no):
         if self.task_vars[task_no].get():
             # play chime when task is marked as done
-            mixer.Channel(0).play(mixer.Sound("chime.mp3"))
+            mixer.Channel(0).play(mixer.Sound("scribble.mp3"))
             self.task_checkboxes[task_no].configure(bg_color="#2A2244",text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
             self.remove_buttons[task_no].configure(fg_color="#2A2244",bg_color="#2A2244", hover_color="#2A2244")
         else:

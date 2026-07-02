@@ -32,6 +32,8 @@ is_timer_running = False
 # initializing time remaining variable
 time_remaining = 0
 
+#initilizing after id variable
+after_id = None
 # creating a list of tasks
 tasks = []
 
@@ -51,6 +53,8 @@ class TaskList(tk.CTkScrollableFrame):
     #function to update checkbox and remove button display when selected and unselected
     def update_checkbox(self, task_no):
         if self.task_vars[task_no].get():
+            # play chime when task is marked as done
+            mixer.Channel(0).play(mixer.Sound("chime.mp3"))
             self.task_checkboxes[task_no].configure(bg_color="#2A2244",text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
             self.remove_buttons[task_no].configure(fg_color="#2A2244",bg_color="#2A2244", hover_color="#2A2244")
         else:
@@ -102,7 +106,7 @@ class TaskList(tk.CTkScrollableFrame):
                                        variable=self.task_vars[i],
                                        command=partial(self.update_checkbox, i))
             #ensuring the text, no matter the length is visible at a glance
-            self.task._text_label.configure(wraplength=300)
+            self.task._text_label.configure(wraplength=290)
 
             #update geometry manager
             self.task.update()
@@ -175,14 +179,22 @@ class TaskWindow(tk.CTkToplevel):
 
 
         #function to add a task
-        def addTask():
-            #input validation of task input, should not be empty string and should only contain alphanumeric characters
+        def addTask(event=0):
+            #initalize the valid input variable to false
+            self.valid_input = False
+
+            #check if input contains an alphabet character
+            for char in self.task_input.get():
+                if char.isalnum():
+                    self.valid_input = True
+
+            #displaying relevant error messages based on validation checks
             if self.task_input.get()=="":
                 messagebox.askretrycancel("Invalid Input","Input cannot be empty")
-            #removes spaces which are considered special characters before checking whether all characters are alphanumeric
-            elif not self.task_input.get().replace(" ","").isalnum():
-                messagebox.askretrycancel("Invalid Input","Input should not contain special characters ")
+            elif self.valid_input==False:
+                messagebox.askretrycancel("Invalid Input","Input should contain alphabet characters")
             else:
+                #if tasks are valid add it to the list
                 tasks.append(self.task_input.get())
                 #update the task list frame
                 TaskList.update(self.task_list_frame, values=self.tasks)
@@ -198,6 +210,7 @@ class TaskWindow(tk.CTkToplevel):
         self.add_task_button.bind("<Leave>", lambda hover: update_add_button(False))
 
         self.add_task_button.grid(column=0, row=2, padx=10, pady=10, sticky="e")
+
 
 
 #creates timer app window
@@ -398,6 +411,7 @@ class TimerApp(tk.CTk):
                 self.focus_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
                 self.short_break_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
                 self.long_break_btn.configure(fg_color="#744B77", text_color="#FFFFFF", hover_color="#905994")
+            self.timer_display.update()
 
         # logic to switch mode based on the previous mode and the number of sessions completed
         def switch_mode():
@@ -424,20 +438,23 @@ class TimerApp(tk.CTk):
 
         # countdown function created
         def countdown_timer():
-            global time_remaining, is_timer_running
+            global time_remaining, is_timer_running, after_id
             #updates timer label based on countdown
-            if time_remaining != 0:
+            if is_timer_running==False:
+                return
+            elif time_remaining != 0:
                 self.timer_display_txt.set(
                     "{:02d}:{:02d}".format(time_remaining // 60, time_remaining % 60))  # update the timer display text
                 self.update()  # updates the timer display
-                if is_timer_running:
-                    time_remaining -= 1
+                time_remaining -= 1
+                after_id = self.after(1000, countdown_timer)
             else:
+                self.after_cancel(after_id)
                 # after timer ends, mode is switched and the timer is reset
                 switch_mode()
                 set_indicator()
                 set_timer()
-            self.after(2000,countdown_timer)
+
         #run countdown timer
         countdown_timer()
 

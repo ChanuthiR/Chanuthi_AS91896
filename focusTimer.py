@@ -183,7 +183,7 @@ class TaskWindow(tk.CTkToplevel):
             #initalize the valid input variable to false
             self.valid_input = False
 
-            #check if input contains an alphabet character
+            #check if input contains an alphanumeric character
             for char in self.task_input.get():
                 if char.isalnum():
                     self.valid_input = True

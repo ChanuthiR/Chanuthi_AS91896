@@ -37,6 +37,9 @@ after_id = None
 # creating a list of tasks
 tasks = []
 
+#intialize music variable
+MUSIC = "jazz.mp3"
+
 #creates task list frame that can scroll
 class TaskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
@@ -136,7 +139,24 @@ class TaskList(tk.CTkScrollableFrame):
         #ensuring task vars is visible to outer functions
         return self.task_vars
 
+class musicChoice(tk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+        self.geometry("200x300")
+        # ensure window cannot be resized
+        self.resizable(False, False)
+        self.title("Select music")
+        self.configure(fg_color="#160F37")
+        # grid configuration
+        self.grid_columnconfigure(0, weight=1)
+        # ensure window stays on top of other windows
+        self.wm_attributes("-topmost", 1)
 
+        self.jazz_button = tk.CTkRadioButton(self,text="Jazz",variable=MUSIC,value="jazz.mp3")
+        self.lofi_button = tk.CTkRadioButton(self, text="Lofi", variable=MUSIC, value="lofi.mp3")
+        self.rainButton = tk.CTkRadioButton(self, text="Rain", variable=MUSIC, value="rain.mp3")
+        self.classicalButton = tk.CTkRadioButton(self, text="Classical", variable=MUSIC, value="classical.mp3")
+        self.retroButton = tk.CTkRadioButton(self, text="Retro", variable=MUSIC, value="retro.mp3")
 
 #creates task list window
 class TaskWindow(tk.CTkToplevel):
@@ -246,7 +266,7 @@ class TimerApp(tk.CTk):
 
         #set up player, volume, and load the music
         mixer.init()
-        mixer.music.load("music.mp3")
+        mixer.music.load(MUSIC)
         mixer.music.set_volume(0.3)
         
         #music switch variable

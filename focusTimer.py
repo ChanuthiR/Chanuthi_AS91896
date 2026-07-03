@@ -327,7 +327,23 @@ class TimerApp(tk.CTk):
         self.indicator_label = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
                                        height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
                                           , text_color="#5DB69F",cursor='hand2')
+
+        #add event binding to showcase messagebox when indicator label clicked
         self.indicator_label.bind("<Button>", explain)
+
+
+        #updating add task button depending on if the user is hovering or not
+        def update_indicator_label(is_hovering):
+            if is_hovering:
+                self.indicator_label.configure(text_color="#8DCBBB")
+            else:
+                self.indicator_label.configure(text_color="#5DB69F")
+
+        #adding hover effect to indicator label
+        self.indicator_label.bind("<Enter>", lambda hover: update_indicator_label(True))
+        self.indicator_label.bind("<Leave>", lambda hover: update_indicator_label(False))
+
+
         self.indicator_label.grid(row=0, column=0, sticky="w", pady=(10,24), padx=28)
 
         for x in range(1,5):

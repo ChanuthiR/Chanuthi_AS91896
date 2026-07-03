@@ -316,11 +316,18 @@ class TimerApp(tk.CTk):
             else:
                 self.task_button.configure(image = CTkImage(light_image=Image.open("taskListButton.png"), size=(40, 40)))
 
+
+        def explain(event=0):
+            messagebox.showinfo("how to use",
+                                "This timer uses the pomodoro method of following a focus session with a short break, "
+                                "and if you complete four focus sessions, you earn a long break. "
+                                "This indicator can be used to track your progress.")
         #creating four indicators using a for loop
         # and changing the x position for each so it shifts to the right for each indicator
         self.indicator_label = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
                                        height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
-                                          , text_color="#5DB69F")
+                                          , text_color="#5DB69F",cursor='hand2')
+        self.indicator_label.bind("<Button>", explain)
         self.indicator_label.grid(row=0, column=0, sticky="w", pady=(10,24), padx=28)
 
         for x in range(1,5):

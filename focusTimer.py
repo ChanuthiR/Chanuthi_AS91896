@@ -37,6 +37,58 @@ after_id = None
 # creating a list of tasks
 tasks = []
 
+MUSIC = "jazz.mp3"
+
+# music switch variable
+is_music_playing = None
+
+class musicSelectWindow(tk.CTkToplevel):
+    def __init__(self):
+        super().__init__()
+        self.geometry("200x170")
+        #ensure window cannot be resized
+        self.resizable(False, False)
+        self.title("Music Select")
+        self.configure(fg_color="#160F37")
+
+        # grid configuration
+        self.grid_columnconfigure(0, weight=1)
+
+        #ensure window stays on top of other windows
+        self.wm_attributes("-topmost", 1)
+
+        self.music_selected = tk.StringVar(value="jazz.mp3")
+
+        self.music_label = tk.CTkLabel(self, fg_color="#160F37", text="Music Selection:", text_color="#FFFFFF",
+                                      font=tk.CTkFont(family="Consolas", size=14))
+        self.music_label.grid(column=0, row=0, sticky="e", padx=20)
+
+        self.jazz_option = tk.CTkRadioButton(self, bg_color="#160F37", text_color="white", text="Jazz",variable=self.music_selected,
+                                             value="jazz.mp3", fg_color="#5DB69F", command=self.update_music)
+        self.lofi_option = tk.CTkRadioButton(self, bg_color="#160F37", text_color="white", text="Lofi", variable=self.music_selected,
+                                            value="lofi.mp3", fg_color="#5DB69F", command=self.update_music)
+        self.rain_option = tk.CTkRadioButton(self, bg_color="#160F37", text_color="white", text="Rain", variable=self.music_selected,
+                                            value="rain.mp3", fg_color="#5DB69F", command=self.update_music)
+        self.classical_option = tk.CTkRadioButton(self, bg_color="#160F37", text_color="white", text="Classical", variable=self.music_selected,
+                                            value="classical.mp3", fg_color="#5DB69F", command=self.update_music)
+        self.retro_option = tk.CTkRadioButton(self, bg_color="#160F37", text_color="white", text="Retro", variable=self.music_selected,
+                                            value="retro.mp3", fg_color="#5DB69F", command=self.update_music)
+
+        self.jazz_option.grid(column=0, row=1)
+        self.lofi_option.grid(column=0, row=2)
+        self.rain_option.grid(column=0, row=3)
+        self.classical_option.grid(column=0, row=4)
+        self.retro_option.grid(column=0, row=5)
+
+    def update_music(self):
+        global MUSIC, is_music_playing
+        MUSIC = self.music_selected.get()
+        is_music_playing.set(value="off")
+        TimerApp.music_control(root)
+        mixer.music.load(MUSIC)
+        mixer.music.set_volume(0.2)
+
+
 #creates task list frame that can scroll
 class TaskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
@@ -140,7 +192,7 @@ class TaskList(tk.CTkScrollableFrame):
 
 #creates task list window
 class TaskWindow(tk.CTkToplevel):
-    global tasks
+    global tasks, is_music_playing
     def __init__(self):
         super().__init__()
         self.geometry("400x300")
@@ -217,6 +269,7 @@ class TaskWindow(tk.CTkToplevel):
 class TimerApp(tk.CTk):
     def __init__(self):
         super().__init__()
+        global MUSIC, is_music_playing
 
         # initialized window with name and make it fullscreen and the background color purple
         self.title("Productivity")
@@ -246,17 +299,16 @@ class TimerApp(tk.CTk):
 
         #set up player, volume, and load the music
         mixer.init()
-        mixer.music.load("music.mp3")
+        mixer.music.load(MUSIC)
         mixer.music.set_volume(0.3)
-        
-        #music switch variable
-        self.is_music_playing = tk.StringVar(value="off")
+
+        is_music_playing = tk.StringVar(value="off")
 
         #creating indicators within a list
         self.indicators = []
 
         #ensures there is no task list visible when program starts
-        self.toplevel_window = None
+        self.task_window = None
 
         #function to control the timer and update the start button GUI
         def timer_control():
@@ -268,18 +320,6 @@ class TimerApp(tk.CTk):
             else:
                 self.start_btn.configure(text="Start")
                 countdown_timer()
-
-        #function  to change the button colour after music switch is on
-        #plays the music when switch is on and stops music when switch is not on
-        def music_control():
-            if self.is_music_playing.get() == "on":
-                mixer.music.play(-1)
-                self.music_switch.configure(button_color="white", button_hover_color="#EADDFF")
-                self.music_icon.configure(fg_color="white")
-            else:
-                mixer.music.pause()
-                self.music_switch.configure(button_color="#79747E", button_hover_color="#49454F")
-                self.music_icon.configure(fg_color="#E6E0E9")
 
         #function to set session indicators
         def set_indicator():
@@ -302,12 +342,19 @@ class TimerApp(tk.CTk):
             #update indicator label
             self.indicator_label.update()
 
-    #function to open task window
+        #function to open task window
         def open_tasks(self):
-            if self.toplevel_window is None or not self.toplevel_window.winfo_exists(): #checks if the task list window already exists or not
-                self.toplevel_window = TaskWindow()  # create window
+            if self.task_window is None or not self.task_window.winfo_exists(): #checks if the task list window already exists or not
+                self.task_window = TaskWindow()  # create window
             else:
-                self.toplevel_window.focus()  # if window exists focus it
+                self.task_window.focus()  # if window exists focus it
+
+        #function to open music window
+        def open_music(event=0):
+            if self.music_window is None or not self.music_window.winfo_exists():  # checks if the music list window already exists or not
+                self.music_window = musicSelectWindow()  # create window
+            else:
+                self.music_window.focus()  # if window exists focus it
 
         #function to update task button based on whether the button is in a hovering state or not
         def update_task_button(is_hovering):
@@ -383,13 +430,29 @@ class TimerApp(tk.CTk):
 
         #creating music switch and adding the music icon
         self.music_switch = tk.CTkSwitch(self, text="Music",
-                                        variable=self.is_music_playing, onvalue="on", offvalue="off", bg_color="#160F37",
+                                        variable=is_music_playing, onvalue="on", offvalue="off", bg_color="#160F37",
                                         button_color="#79747E", fg_color="#E6E0E9",
                                         switch_width=75, text_color="#160F37", switch_height=35,
-                                        progress_color="#6750A4", command=music_control, button_hover_color="#49454F")
+                                        progress_color="#6750A4", command=self.music_control, button_hover_color="#49454F")
 
         self.music_icon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("musicNote.png"),
                                                     size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
+
+        # add event binding to open music window when music icon clicked
+        self.music_icon.bind("<Button>", open_music)
+
+
+        #updating add task button depending on if the user is hovering or not
+        def update_music_icon(is_hovering):
+            if is_hovering:
+                self.music_icon.configure(image=CTkImage(light_image=Image.open("musicNoteHover.png"),size=(15,15)))
+            else:
+                self.music_icon.configure(image=CTkImage(light_image=Image.open("musicNote.png"),size=(15,15)))
+
+        #adding hover effect to indicator label
+        self.music_icon.bind("<Enter>", lambda hover: update_music_icon(True))
+        self.music_icon.bind("<Leave>", lambda hover: update_music_icon(False))
+
         self.music_icon.place(x=650,y=24)
         self.music_switch.grid(row=0, column=2, pady=10, padx=(0,30))
 
@@ -401,6 +464,9 @@ class TimerApp(tk.CTk):
 
         self.task_button.bind("<Enter>", lambda hover: update_task_button(True))
         self.task_button.bind("<Leave>",lambda hover: update_task_button(False))
+
+        self.music_window = None
+
 
         # function for user to set the mode manually based on input from the buttons
         def set_mode(new_mode):
@@ -480,6 +546,20 @@ class TimerApp(tk.CTk):
 
         #run countdown timer
         countdown_timer()
+
+        #function  to change the button colour after music switch is on
+        #plays the music when switch is on and stops music when switch is not on
+    def music_control(self):
+            global is_music_playing
+            if is_music_playing.get() == "on":
+                mixer.music.play(-1)
+                self.music_switch.configure(button_color="white", button_hover_color="#EADDFF")
+                self.music_icon.configure(fg_color="white")
+            else:
+                mixer.music.pause()
+                self.music_switch.configure(button_color="#79747E", button_hover_color="#49454F")
+                self.music_icon.configure(fg_color="#E6E0E9")
+
 
 #calling the TimerApp
 if __name__ == '__main__':

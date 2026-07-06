@@ -46,6 +46,7 @@ class MusicSelectWindow(tk.CTkToplevel):
     def __init__(self):
         super().__init__()
         self.geometry("200x170")
+        #protocol to ensure clear shutdown
         #ensure window cannot be resized
         self.resizable(False, False)
         self.title("Music Select")
@@ -342,6 +343,7 @@ class TimerApp(tk.CTk):
             if self.task_window is None or not self.task_window.winfo_exists(): #checks if the task list window already exists or not
                 self.task_window = TaskWindow()  # create window
             else:
+                self.wm_attributes("-topmost", 0)
                 self.task_window.focus()  # if window exists focus it
 
         #function to open music window
@@ -349,6 +351,7 @@ class TimerApp(tk.CTk):
             if self.music_window is None or not self.music_window.winfo_exists():  # checks if the music list window already exists or not
                 self.music_window = MusicSelectWindow()  # create window
             else:
+                self.wm_attributes("-topmost", 0)
                 self.music_window.focus()  # if window exists focus it
 
         #function to update task button based on whether the button is in a hovering state or not
@@ -528,6 +531,7 @@ class TimerApp(tk.CTk):
             if is_timer_running==False:
                 return
             elif time_remaining != 0:
+                self.wm_attributes("-topmost",1)
                 self.timer_display_txt.set(
                     "{:02d}:{:02d}".format(time_remaining // 60, time_remaining % 60))  # update the timer display text
                 self.update()  # updates the timer display

@@ -42,7 +42,7 @@ MUSIC = "jazz.mp3"
 # music switch variable
 is_music_playing = None
 
-class musicSelectWindow(tk.CTkToplevel):
+class MusicSelectWindow(tk.CTkToplevel):
     def __init__(self):
         super().__init__()
         self.geometry("200x170")
@@ -352,7 +352,7 @@ class TimerApp(tk.CTk):
         #function to open music window
         def open_music(event=0):
             if self.music_window is None or not self.music_window.winfo_exists():  # checks if the music list window already exists or not
-                self.music_window = musicSelectWindow()  # create window
+                self.music_window = MusicSelectWindow()  # create window
             else:
                 self.music_window.focus()  # if window exists focus it
 
@@ -500,7 +500,8 @@ class TimerApp(tk.CTk):
                 self.focus_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
                 self.short_break_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
                 self.long_break_btn.configure(fg_color="#744B77", text_color="#FFFFFF", hover_color="#905994")
-            self.timer_display.update()
+            self.timer_display_txt.set(
+                "{:02d}:{:02d}".format(time_remaining // 60, time_remaining % 60))  # update the timer display text
 
         # logic to switch mode based on the previous mode and the number of sessions completed
         def switch_mode():

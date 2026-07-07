@@ -49,7 +49,7 @@ class MusicSelectWindow(tk.CTkToplevel):
         #protocol to ensure clear shutdown
         #ensure window cannot be resized
         self.resizable(False, False)
-        self.title("Music Select")
+        self.title("♫")
         self.configure(fg_color="#160F37")
 
         # grid configuration
@@ -136,6 +136,7 @@ class TaskList(tk.CTkScrollableFrame):
     #function to update the checkbox display
     def update(self, values):
         #destroy all checkboxes to ensure no garbage collected
+
         for checkbox in self.winfo_children():
             checkbox.destroy()
 
@@ -366,31 +367,36 @@ class TimerApp(tk.CTk):
             messagebox.showinfo("how to use",
                                 "This timer uses the pomodoro method of following a focus session with a short break, "
                                 "and if you complete four focus sessions, you earn a long break. "
-                                "This indicator can be used to track your progress.")
-        #creating four indicators using a for loop
-        # and changing the x position for each so it shifts to the right for each indicator
+                                "The number at the top-left can be used to track your progress out of the four sessions.")
+
+        self.info_label = tk.CTkLabel(self, text="?",fg_color= "#160F37",width=15,
+                                       height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=30)
+                                          , text_color="#5DB69F",cursor='hand2')
+        self.info_label.grid(row=2, column=2, sticky="se", pady=(130,0),padx=20)
+
         self.indicator_label = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
                                        height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
-                                          , text_color="#5DB69F",cursor='hand2')
+                                          , text_color="#5DB69F")
 
         #add event binding to showcase messagebox when indicator label clicked
-        self.indicator_label.bind("<Button>", explain)
-
+        self.info_label.bind("<Button>", explain)
 
         #updating add task button depending on if the user is hovering or not
-        def update_indicator_label(is_hovering):
+        def update_info_label(is_hovering):
             if is_hovering:
-                self.indicator_label.configure(text_color="#8DCBBB")
+                self.info_label.configure(text_color="#8DCBBB")
             else:
-                self.indicator_label.configure(text_color="#5DB69F")
+                self.info_label.configure(text_color="#5DB69F")
 
         #adding hover effect to indicator label
-        self.indicator_label.bind("<Enter>", lambda hover: update_indicator_label(True))
-        self.indicator_label.bind("<Leave>", lambda hover: update_indicator_label(False))
+        self.info_label.bind("<Enter>", lambda hover: update_info_label(True))
+        self.info_label.bind("<Leave>", lambda hover: update_info_label(False))
 
 
         self.indicator_label.grid(row=0, column=0, sticky="w", pady=(10,24), padx=28)
 
+        # creating four indicators using a for loop
+        # and changing the x position for each so it shifts to the right for each indicator
         for x in range(1,5):
             self.indicator=tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,
                                        height=15, bg_color="#160F37")
@@ -509,7 +515,7 @@ class TimerApp(tk.CTk):
             #set the timer to not run
             is_timer_running = False
             self.start_btn.configure(text="Start")
-            if current_mode == "Focus":
+            if current_mode == "Focus" and sessions!=4:
                 sessions += 1 #increment session counter
                 if sessions == 4: # once four sessions are complete, long break starts
                     current_mode = "Long Break"

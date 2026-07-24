@@ -20,9 +20,9 @@ from functools import partial
 current_mode = "Focus"
 
 #initlizing timer amounts for each mode in seconds
-FOCUS_TIME = 5
-SHORT_BREAK_TIME =3
-LONG_BREAK_TIME = 10
+FOCUS_TIME = 25*60
+SHORT_BREAK_TIME =5*60
+LONG_BREAK_TIME = 10*60
 
 #initalizing the session counter
 sessions = 0

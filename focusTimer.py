@@ -45,6 +45,8 @@ ACCENT_COLOR1 ="#2A2244"
 ACCENT_COLOR2 ="#744B77"
 TEXT_COLOR = "#FFFFFF"
 
+
+
 #creates task list frame that can scroll
 class TaskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
@@ -56,6 +58,9 @@ class TaskList(tk.CTkScrollableFrame):
         #using the task list as an argument for the update function
         self.values = values
         self.update(self.values)
+
+        #task list font configuration
+        self.TASK_FONT = tk.CTkFont(family="Consolas", size=24)
 
 
     #function to update checkbox and remove button display when selected and unselected
@@ -109,7 +114,7 @@ class TaskList(tk.CTkScrollableFrame):
             self.task = tk.CTkCheckBox(self, height=39, width=320,
                                            hover_color="#515658", bg_color=ACCENT_COLOR2, text_color=TEXT_COLOR,
                                            border_color="#595E61", border_width=12,
-                                           fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
+                                           fg_color="#5DB69F", font=self.TASK_FONT,
                                            text=task, checkmark_color="#5DB69F",
                                        variable=self.task_vars[i],
                                        command=partial(self.update_checkbox, i))
@@ -179,8 +184,11 @@ class TaskWindow(tk.CTkToplevel):
         #ensure window stays on top of other windows
         self.wm_attributes("-topmost", 1)
 
+        # task list font configuration
+        self.TASK_FONT = tk.CTkFont(family="Consolas", size=24)
+
         #creating the task label in the top right corner
-        self.task_label = tk.CTkLabel(self, fg_color=BG_COLOR, text="Tasks", text_color=TEXT_COLOR, font= tk.CTkFont(family="Consolas", size= 24))
+        self.task_label = tk.CTkLabel(self, fg_color=BG_COLOR, text="Tasks", text_color=TEXT_COLOR, font=self.TASK_FONT)
         self.task_label.grid(column=0,row=0,sticky="e", padx=20)
 
         #creating task variable
@@ -283,6 +291,9 @@ class TimerApp(tk.CTk):
         #ensures there is no task list visible when program starts
         self.toplevel_window = None
 
+        #Fonts
+        BODY_FONT = tk.CTkFont(family="Consolas", size=20)
+
         #function to control the timer and update the start button GUI
         def timer_control():
             global is_timer_running
@@ -350,7 +361,7 @@ class TimerApp(tk.CTk):
         #creating four indicators using a for loop
         # and changing the x position for each so it shifts to the right for each indicator
         self.indicator_label = tk.CTkLabel(self, text="0/4",fg_color= BG_COLOR,width=15,
-                                       height=15, bg_color=BG_COLOR, font=tk.CTkFont(family="Consolas", size=20)
+                                       height=15, bg_color=BG_COLOR, font=BODY_FONT
                                           , text_color="#5DB69F",cursor='hand2')
 
         #add event binding to showcase messagebox when indicator label clicked
@@ -379,21 +390,21 @@ class TimerApp(tk.CTk):
 
         # creating the start button with a hover effect and linking its functionality
         self.start_btn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color=BG_COLOR, text_color=TEXT_COLOR,
-                                     font=tk.CTkFont(family="Consolas", size=20), command=timer_control,
+                                     font=BODY_FONT, command=timer_control,
                                      border_spacing=10,
                                      corner_radius=20, width=172, height=42, hover_color="#392E5E")
         self.start_btn.place(x=320, y=300)
 
         # creating focus button
         self.focus_btn = tk.CTkButton(self, text="Focus", fg_color=ACCENT_COLOR1, bg_color=BG_COLOR, text_color="#B776BB",
-                                     command=lambda: set_mode("Focus"), font=tk.CTkFont(family="Consolas", size=20),
+                                     command=lambda: set_mode("Focus"), font=BODY_FONT,
                                      border_spacing=10, corner_radius=20, width=172, height=42, hover_color="#392E5E")
         self.focus_btn.place(x=120, y=390)
 
         # creating short break button
         self.short_break_btn = tk.CTkButton(self, text="Short Break", fg_color=ACCENT_COLOR1, bg_color=BG_COLOR,
                                           text_color="#B776BB", command=lambda: set_mode("Short Break"),
-                                          font=tk.CTkFont(family="Consolas", size=20), border_spacing=10,
+                                          font=BODY_FONT, border_spacing=10,
                                           corner_radius=20,
                                           width=172, height=42, hover_color="#392E5E")
         self.short_break_btn.place(x=320, y=390)
@@ -401,7 +412,7 @@ class TimerApp(tk.CTk):
         # creating long break button
         self.long_break_btn = tk.CTkButton(self, text="Long Break", fg_color=ACCENT_COLOR1, bg_color=BG_COLOR,
                                          text_color="#B776BB", command=lambda: set_mode("Long Break"),
-                                         font=tk.CTkFont(family="Consolas", size=20), border_spacing=10,
+                                         font=BODY_FONT, border_spacing=10,
                                          corner_radius=20,
                                          width=172, height=42, hover_color="#392E5E")
         self.long_break_btn.place(x=520, y=390)

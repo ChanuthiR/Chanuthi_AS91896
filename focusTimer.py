@@ -40,12 +40,17 @@ tasks = []
 #intialize music variable
 MUSIC = "jazz.mp3"
 
+BG_COLOR = "#160F37"
+ACCENT_COLOR1 ="#2A2244"
+ACCENT_COLOR2 ="#744B77"
+TEXT_COLOR = "#FFFFFF"
+
 #creates task list frame that can scroll
 class TaskList(tk.CTkScrollableFrame):
     def __init__(self, master, values):
         #configuration of task list frame with a single column and dark purple background
         super().__init__(master)
-        self.configure(fg_color="#160F37")
+        self.configure(fg_color=BG_COLOR)
         self.grid_columnconfigure((0), weight=1)
 
         #using the task list as an argument for the update function
@@ -58,12 +63,12 @@ class TaskList(tk.CTkScrollableFrame):
         if self.task_vars[task_no].get():
             # play chime when task is marked as done
             mixer.Channel(0).play(mixer.Sound("scribble.mp3"))
-            self.task_checkboxes[task_no].configure(bg_color="#2A2244",text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
-            self.remove_buttons[task_no].configure(fg_color="#2A2244",bg_color="#2A2244", hover_color="#2A2244")
+            self.task_checkboxes[task_no].configure(bg_color=ACCENT_COLOR1,text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
+            self.remove_buttons[task_no].configure(fg_color=ACCENT_COLOR1,bg_color=ACCENT_COLOR1, hover_color=ACCENT_COLOR1)
         else:
-            self.task_checkboxes[task_no].configure(bg_color="#744B77", text_color="#FFFFFF",
+            self.task_checkboxes[task_no].configure(bg_color=ACCENT_COLOR2, text_color=TEXT_COLOR,
                                                   font=tk.CTkFont(family="Consolas", size=24, overstrike=False))
-            self.remove_buttons[task_no].configure(fg_color="#744B77",bg_color="#744B77",hover_color="#744B77")
+            self.remove_buttons[task_no].configure(fg_color=ACCENT_COLOR2,bg_color=ACCENT_COLOR2,hover_color=ACCENT_COLOR2)
 
     #function to update the remove button depending on whether it is hovered over or not
     def update_remove_button(self, is_hovering, button_no, partial):
@@ -102,7 +107,7 @@ class TaskList(tk.CTkScrollableFrame):
             self.task_vars.append(self.task_done)
 
             self.task = tk.CTkCheckBox(self, height=39, width=320,
-                                           hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF",
+                                           hover_color="#515658", bg_color=ACCENT_COLOR2, text_color=TEXT_COLOR,
                                            border_color="#595E61", border_width=12,
                                            fg_color="#5DB69F", font=tk.CTkFont(family="Consolas", size=24),
                                            text=task, checkmark_color="#5DB69F",
@@ -116,8 +121,8 @@ class TaskList(tk.CTkScrollableFrame):
 
             #creating remove task button
             #getting the height of the task checkbox and matching it as the height of the remove button
-            self.remove_task_button = tk.CTkButton(self, fg_color="#744B77", text="", bg_color="#744B77",height=self.task.winfo_reqheight(), width=10,
-                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color="#744B77",
+            self.remove_task_button = tk.CTkButton(self, fg_color=ACCENT_COLOR2, text="", bg_color=ACCENT_COLOR2,height=self.task.winfo_reqheight(), width=10,
+                                       image=CTkImage(light_image=Image.open("removeTaskButton.png"), size=(20,20)), hover_color=ACCENT_COLOR2,
                                                  command=partial(TaskList.remove_task, self, i))
 
             # add the created remove button to the remove button array
@@ -146,7 +151,7 @@ class musicChoice(tk.CTkToplevel):
         # ensure window cannot be resized
         self.resizable(False, False)
         self.title("Select music")
-        self.configure(fg_color="#160F37")
+        self.configure(fg_color=BG_COLOR)
         # grid configuration
         self.grid_columnconfigure(0, weight=1)
         # ensure window stays on top of other windows
@@ -167,7 +172,7 @@ class TaskWindow(tk.CTkToplevel):
         #ensure window cannot be resized
         self.resizable(False, False)
         self.title("Tasks")
-        self.configure(fg_color="#160F37")
+        self.configure(fg_color=BG_COLOR)
         #grid configuration
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0,1), weight=1)
@@ -175,7 +180,7 @@ class TaskWindow(tk.CTkToplevel):
         self.wm_attributes("-topmost", 1)
 
         #creating the task label in the top right corner
-        self.task_label = tk.CTkLabel(self, fg_color="#160F37", text="Tasks", text_color="#FFFFFF", font= tk.CTkFont(family="Consolas", size= 24))
+        self.task_label = tk.CTkLabel(self, fg_color=BG_COLOR, text="Tasks", text_color=TEXT_COLOR, font= tk.CTkFont(family="Consolas", size= 24))
         self.task_label.grid(column=0,row=0,sticky="e", padx=20)
 
         #creating task variable
@@ -222,9 +227,9 @@ class TaskWindow(tk.CTkToplevel):
             self.task_input.delete(0,len(self.task_input.get()))
 
         #creating add task button
-        self.add_task_button = tk.CTkButton(self,fg_color="#160F37", text="", bg_color="#160F37",height=25, width=25,
+        self.add_task_button = tk.CTkButton(self,fg_color=BG_COLOR, text="", bg_color=BG_COLOR,height=25, width=25,
                                        image=CTkImage(light_image=Image.open("addTaskButton.png"), size=(40,40)),
-                                          hover_color="#160F37", command=addTask)
+                                          hover_color=BG_COLOR, command=addTask)
         #adding binding for events for when the button is hovered over or not
         self.add_task_button.bind("<Enter>", lambda hover: update_add_button(True))
         self.add_task_button.bind("<Leave>", lambda hover: update_add_button(False))
@@ -240,7 +245,7 @@ class TimerApp(tk.CTk):
 
         # initialized window with name and make it fullscreen and the background color purple
         self.title("Productivity")
-        self.config(background="#160F37")
+        self.config(background=BG_COLOR)
         self.geometry("800x500")
 
         # ensure window cannot be resized
@@ -261,7 +266,7 @@ class TimerApp(tk.CTk):
 
         # creating Timer Display label
         self.timer_display = tk.CTkLabel(self, textvariable=self.timer_display_txt, text_color="#5DB69F",
-                                        font=tk.CTkFont(family="Consolas", size=200), fg_color="#160F37")
+                                        font=tk.CTkFont(family="Consolas", size=200), fg_color=BG_COLOR)
         self.timer_display.grid(row=1, column=0, columnspan=3, sticky="ew")
 
         #set up player, volume, and load the music
@@ -294,8 +299,8 @@ class TimerApp(tk.CTk):
         def music_control():
             if self.is_music_playing.get() == "on":
                 mixer.music.play(-1)
-                self.music_switch.configure(button_color="white", button_hover_color="#EADDFF")
-                self.music_icon.configure(fg_color="white")
+                self.music_switch.configure(button_color=TEXT_COLOR, button_hover_color="#EADDFF")
+                self.music_icon.configure(fg_color=TEXT_COLOR)
             else:
                 mixer.music.pause()
                 self.music_switch.configure(button_color="#79747E", button_hover_color="#49454F")
@@ -306,8 +311,8 @@ class TimerApp(tk.CTk):
             global sessions, current_mode
             for indicator in self.indicators:
                 if sessions==4: #making session indicators invisible when sessions are complete
-                    indicator.configure(fg_color="#160F37")
-                    self.indicator_label.configure(text_color="#160F37")
+                    indicator.configure(fg_color=BG_COLOR)
+                    self.indicator_label.configure(text_color=BG_COLOR)
                     self.indicator_label.configure(text="{}/4".format(sessions))
                 elif sessions == 0: #resetting indicators after long break is completed
                     self.indicator_label.configure(text="{}/4".format(sessions))
@@ -344,8 +349,8 @@ class TimerApp(tk.CTk):
                                 "This indicator can be used to track your progress.")
         #creating four indicators using a for loop
         # and changing the x position for each so it shifts to the right for each indicator
-        self.indicator_label = tk.CTkLabel(self, text="0/4",fg_color= "#160F37",width=15,
-                                       height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=20)
+        self.indicator_label = tk.CTkLabel(self, text="0/4",fg_color= BG_COLOR,width=15,
+                                       height=15, bg_color=BG_COLOR, font=tk.CTkFont(family="Consolas", size=20)
                                           , text_color="#5DB69F",cursor='hand2')
 
         #add event binding to showcase messagebox when indicator label clicked
@@ -368,25 +373,25 @@ class TimerApp(tk.CTk):
 
         for x in range(1,5):
             self.indicator=tk.CTkLabel(self, text="",fg_color= "#595E61", corner_radius=15,width=15,
-                                       height=15, bg_color="#160F37")
+                                       height=15, bg_color=BG_COLOR)
             self.indicator.grid(row=0,column=0,sticky="nw", pady=20, padx=(40+(30*x)))
             self.indicators.append(self.indicator)
 
         # creating the start button with a hover effect and linking its functionality
-        self.start_btn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color="#160F37", text_color="#FFFFFF",
+        self.start_btn = tk.CTkButton(self, text="Start", fg_color="#322952", bg_color=BG_COLOR, text_color=TEXT_COLOR,
                                      font=tk.CTkFont(family="Consolas", size=20), command=timer_control,
                                      border_spacing=10,
                                      corner_radius=20, width=172, height=42, hover_color="#392E5E")
         self.start_btn.place(x=320, y=300)
 
         # creating focus button
-        self.focus_btn = tk.CTkButton(self, text="Focus", fg_color="#2A2244", bg_color="#160F37", text_color="#B776BB",
+        self.focus_btn = tk.CTkButton(self, text="Focus", fg_color=ACCENT_COLOR1, bg_color=BG_COLOR, text_color="#B776BB",
                                      command=lambda: set_mode("Focus"), font=tk.CTkFont(family="Consolas", size=20),
                                      border_spacing=10, corner_radius=20, width=172, height=42, hover_color="#392E5E")
         self.focus_btn.place(x=120, y=390)
 
         # creating short break button
-        self.short_break_btn = tk.CTkButton(self, text="Short Break", fg_color="#2A2244", bg_color="#160F37",
+        self.short_break_btn = tk.CTkButton(self, text="Short Break", fg_color=ACCENT_COLOR1, bg_color=BG_COLOR,
                                           text_color="#B776BB", command=lambda: set_mode("Short Break"),
                                           font=tk.CTkFont(family="Consolas", size=20), border_spacing=10,
                                           corner_radius=20,
@@ -394,7 +399,7 @@ class TimerApp(tk.CTk):
         self.short_break_btn.place(x=320, y=390)
 
         # creating long break button
-        self.long_break_btn = tk.CTkButton(self, text="Long Break", fg_color="#2A2244", bg_color="#160F37",
+        self.long_break_btn = tk.CTkButton(self, text="Long Break", fg_color=ACCENT_COLOR1, bg_color=BG_COLOR,
                                          text_color="#B776BB", command=lambda: set_mode("Long Break"),
                                          font=tk.CTkFont(family="Consolas", size=20), border_spacing=10,
                                          corner_radius=20,
@@ -403,19 +408,19 @@ class TimerApp(tk.CTk):
 
         #creating music switch and adding the music icon
         self.music_switch = tk.CTkSwitch(self, text="Music",
-                                        variable=self.is_music_playing, onvalue="on", offvalue="off", bg_color="#160F37",
+                                        variable=self.is_music_playing, onvalue="on", offvalue="off", bg_color=BG_COLOR,
                                         button_color="#79747E", fg_color="#E6E0E9",
-                                        switch_width=75, text_color="#160F37", switch_height=35,
+                                        switch_width=75, text_color=BG_COLOR, switch_height=35,
                                         progress_color="#6750A4", command=music_control, button_hover_color="#49454F")
 
-        self.music_icon = tk.CTkLabel(self,text_color="#160F37",image=CTkImage(light_image=Image.open("musicNote.png"),
+        self.music_icon = tk.CTkLabel(self,text_color=BG_COLOR,image=CTkImage(light_image=Image.open("musicNote.png"),
                                                     size=(15,15)), width=2, height=5, fg_color="#E6E0E9",text="")
         self.music_icon.place(x=650,y=24)
         self.music_switch.grid(row=0, column=2, pady=10, padx=(0,30))
 
         #creating task button and linking hover updates
-        self.task_button = tk.CTkButton(self,fg_color="#160F37", text="Tasks", bg_color="#160F37",height=25, width=25,
-                                       image=CTkImage(light_image=Image.open("taskListButton.png"), size=(40,40)), hover_color="#160F37",
+        self.task_button = tk.CTkButton(self,fg_color=BG_COLOR, text="Tasks", bg_color=BG_COLOR,height=25, width=25,
+                                       image=CTkImage(light_image=Image.open("taskListButton.png"), size=(40,40)), hover_color=BG_COLOR,
                                        command=lambda: open_tasks(self))
         self.task_button.grid(row=0,column=2, sticky="ne", pady=10)
 
@@ -440,20 +445,20 @@ class TimerApp(tk.CTk):
         def set_timer():
             global current_mode, time_remaining
             if current_mode == "Focus":
-                self.focus_btn.configure(fg_color="#744B77", text_color="#FFFFFF", hover_color="#905994")
-                self.short_break_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
-                self.long_break_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
+                self.focus_btn.configure(fg_color=ACCENT_COLOR2, text_color=TEXT_COLOR, hover_color="#905994")
+                self.short_break_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
+                self.long_break_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
                 time_remaining = FOCUS_TIME
             elif current_mode == "Short Break":
                 time_remaining = SHORT_BREAK_TIME
-                self.focus_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
-                self.short_break_btn.configure(fg_color="#744B77", text_color="#FFFFFF", hover_color="#905994")
-                self.long_break_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
+                self.focus_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
+                self.short_break_btn.configure(fg_color=ACCENT_COLOR2, text_color=TEXT_COLOR, hover_color="#905994")
+                self.long_break_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
             elif current_mode == "Long Break":
                 time_remaining = LONG_BREAK_TIME
-                self.focus_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
-                self.short_break_btn.configure(fg_color="#2A2244", text_color="#B776BB", hover_color="#392E5E")
-                self.long_break_btn.configure(fg_color="#744B77", text_color="#FFFFFF", hover_color="#905994")
+                self.focus_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
+                self.short_break_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
+                self.long_break_btn.configure(fg_color=ACCENT_COLOR2, text_color=TEXT_COLOR, hover_color="#905994")
             self.timer_display.update()
 
         # logic to switch mode based on the previous mode and the number of sessions completed

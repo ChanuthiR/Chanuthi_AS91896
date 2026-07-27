@@ -122,6 +122,7 @@ class TaskList(tk.CTkScrollableFrame):
             self.task._text_label.configure(wraplength=290)
 
             #update geometry manager
+
             self.task.update()
 
             #creating remove task button
@@ -450,6 +451,7 @@ class TimerApp(tk.CTk):
 
             #set the timer amount
             set_timer()
+            countdown_timer()
 
 
         # logic to select timer amount to match the mode, and changes the display colours of the mode buttons to showcase active mode
@@ -470,9 +472,10 @@ class TimerApp(tk.CTk):
                 self.focus_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
                 self.short_break_btn.configure(fg_color=ACCENT_COLOR1, text_color="#B776BB", hover_color="#392E5E")
                 self.long_break_btn.configure(fg_color=ACCENT_COLOR2, text_color=TEXT_COLOR, hover_color="#905994")
-            self.timer_display.update()
+            self.timer_display_txt.set(
+                "{:02d}:{:02d}".format(time_remaining // 60, time_remaining % 60))
 
-        # logic to switch mode based on the previous mode and the number of sessions completed
+            # logic to switch mode based on the previous mode and the number of sessions completed
         def switch_mode():
             global sessions, current_mode, is_timer_running
             #play chime after a session ends
@@ -493,7 +496,10 @@ class TimerApp(tk.CTk):
             else:
                 current_mode = "Focus" #if it is a break mode, switch to focus mode
 
+
         set_timer()
+
+
 
         # countdown function created
         def countdown_timer():

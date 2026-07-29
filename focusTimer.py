@@ -40,6 +40,7 @@ tasks = []
 #intialize music variable
 MUSIC = "jazz.mp3"
 
+#color codes
 BG_COLOR = "#160F37"
 ACCENT_COLOR1 ="#2A2244"
 ACCENT_COLOR2 ="#744B77"
@@ -94,6 +95,8 @@ class TaskList(tk.CTkScrollableFrame):
 
     #function to update the checkbox display
     def update(self, values):
+
+
         #destroy all checkboxes to ensure no garbage collected
         for checkbox in self.winfo_children():
             checkbox.destroy()
@@ -122,7 +125,6 @@ class TaskList(tk.CTkScrollableFrame):
             self.task._text_label.configure(wraplength=290)
 
             #update geometry manager
-
             self.task.update()
 
             #creating remove task button
@@ -508,13 +510,12 @@ class TimerApp(tk.CTk):
             if is_timer_running==False:
                 return
             elif time_remaining != 0:
-                self.timer_display_txt.set(
-                    "{:02d}:{:02d}".format(time_remaining // 60, time_remaining % 60))  # update the timer display text
+                self.timer_display_txt.set( "{:02d}:{:02d}".format(time_remaining // 60, time_remaining % 60))  # update the timer display text
                 self.update()  # updates the timer display
-                time_remaining -= 1
-                after_id = self.after(1000, countdown_timer)
+                time_remaining -= 1 #reduce time remaining by 1 second
+                after_id = self.after(1000, countdown_timer) #repeats this function each second
             else:
-                self.after_cancel(after_id)
+                self.after_cancel(after_id) #stops this function from looping
                 # after timer ends, mode is switched and the timer is reset
                 switch_mode()
                 set_indicator()

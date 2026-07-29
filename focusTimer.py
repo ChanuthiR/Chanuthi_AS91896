@@ -365,9 +365,10 @@ class TimerApp(tk.CTk):
 
         def explain(event=0):
             messagebox.showinfo("how to use",
-                                "This timer uses the pomodoro method of following a focus session with a short break, "
-                                "and if you complete four focus sessions, you earn a long break. "
-                                "The number at the top-left can be used to track your progress out of the four sessions.")
+                                "This timer uses the pomodoro method of following a focus session with a short break.\n"
+                                "If you complete four focus sessions, you earn a long break. \n"
+                                "The number at the top-left can be used to track your progress out of the four sessions. \n "
+                                "Click the music icon to switch the background music.")
 
         self.info_label = tk.CTkLabel(self, text="?",fg_color= "#160F37",width=15,
                                        height=15, bg_color="#160F37", font=tk.CTkFont(family="Consolas", size=30)

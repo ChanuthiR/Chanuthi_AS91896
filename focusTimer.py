@@ -35,7 +35,7 @@ time_remaining = 0
 #initilizing after id variable
 after_id = None
 # creating a list of tasks
-tasks = []
+tasks = {'tasks': [], 'vars':[]}
 
 MUSIC = "jazz.mp3"
 
@@ -105,7 +105,8 @@ class TaskList(tk.CTkScrollableFrame):
 
     #function to update checkbox and remove button display when selected and unselected
     def update_checkbox(self, task_no):
-        if self.task_checkboxes[task_no][0].get():
+        tasks["vars"][task_no] = self.task_checkboxes[task_no][0].get()
+        if tasks["vars"][task_no]:
             # play chime when task is marked as done
             mixer.Channel(0).play(mixer.Sound("scribble.mp3"))
             self.task_checkboxes[task_no][2].configure(bg_color="#2A2244",text_color="#595E61", font=tk.CTkFont(family="Consolas", size=24, overstrike=True))
@@ -114,7 +115,7 @@ class TaskList(tk.CTkScrollableFrame):
             self.task_checkboxes[task_no][2].configure(bg_color="#744B77", text_color="#FFFFFF",
                                                   font=tk.CTkFont(family="Consolas", size=24, overstrike=False))
             self.task_checkboxes[task_no][1].configure(fg_color="#744B77",bg_color="#744B77",hover_color="#744B77")
-        return self.task_checkboxes
+        return self.task_checkboxes, tasks
 
     #function to update the remove button depending on whether it is hovered over or not
     def update_remove_button(self, is_hovering, button_no, partial):
@@ -125,7 +126,8 @@ class TaskList(tk.CTkScrollableFrame):
 
     def remove_task(self, task_no):
         #remove task from the task list
-        tasks.pop(task_no)
+        tasks['tasks'].pop(task_no)
+        tasks['vars'].pop(task_no)
 
         #play chime when task is removed
         mixer.Channel(0).play(mixer.Sound("chime.mp3"))
@@ -141,12 +143,11 @@ class TaskList(tk.CTkScrollableFrame):
             checkbox.destroy()
 
         #create list to hold the checkboxes and respective remove buttons
-        self.task_checkboxes = [[] for x in range(len(values))]
-
+        self.task_checkboxes = [[] for x in range(len(values['tasks']))]
         # iterating through the list of tasks to make a task tab for each
-        for i, task in enumerate(values):
+        for i, task in enumerate(values['tasks']):
              # creating a task with a boolean variable to hold checkbox value
-            self.task_done = tk.BooleanVar()
+            self.task_done = tk.BooleanVar(value=values['vars'][i])
             self.task_checkboxes[i].append(self.task_done)
             self.task = tk.CTkCheckBox(self, height=39, width=320,
                                            hover_color="#515658", bg_color="#744B77", text_color="#FFFFFF",
@@ -182,6 +183,19 @@ class TaskList(tk.CTkScrollableFrame):
 
             #adding created checkbox to the array
             self.task_checkboxes[i].append(self.task)
+
+            if tasks["vars"][i]:
+                 self.task_checkboxes[i][2].configure(bg_color="#2A2244", text_color="#595E61",
+                                                            font=tk.CTkFont(family="Consolas", size=24,
+                                                                            overstrike=True))
+                 self.task_checkboxes[i][1].configure(fg_color="#2A2244", bg_color="#2A2244",
+                                                            hover_color="#2A2244")
+            else:
+                 self.task_checkboxes[i][2].configure(bg_color="#744B77", text_color="#FFFFFF",
+                                                            font=tk.CTkFont(family="Consolas", size=24,
+                                                                            overstrike=False))
+                 self.task_checkboxes[i][1].configure(fg_color="#744B77", bg_color="#744B77",
+                                                            hover_color="#744B77")
 
         return self.task_checkboxes
 
@@ -244,7 +258,8 @@ class TaskWindow(tk.CTkToplevel):
                 messagebox.askretrycancel("Invalid Input","Input should contain alphabet characters")
             else:
                 #if tasks are valid add it to the list
-                tasks.append(self.task_input.get())
+                tasks['tasks'].append(self.task_input.get())
+                tasks['vars'].append(False)
                 #update the task list frame
                 TaskList.update(self.task_list_frame, values=self.tasks)
                 #remove input from entry box
